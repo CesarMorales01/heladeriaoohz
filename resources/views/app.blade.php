@@ -17,7 +17,12 @@
     @viteReactRefresh
     @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
     @inertiaHead
-    @laravelPWA
+
+    <!-- PWA  -->
+    <meta name="theme-color" content="#6777ef" />
+    <link rel="apple-touch-icon" href="{{ asset('plus.png') }}">
+    <link rel="manifest" href="{{ asset('/manifest.json') }}">
+
 </head>
 
 <body class="font-sans antialiased">
@@ -37,6 +42,16 @@
         integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous">
     </script>
     <script src="sweetalert2.all.min.js"></script>
+    <script src="{{ asset('/sw.js') }}"></script>
+
+    <script>
+        if (!navigator.serviceWorker.controller) {
+            navigator.serviceWorker.register("/sw.js").then(function(reg) {
+                console.log("Service worker has been registered for scope: " + reg.scope);
+            });
+        }
+    </script>
+    
 </body>
 
 </html>

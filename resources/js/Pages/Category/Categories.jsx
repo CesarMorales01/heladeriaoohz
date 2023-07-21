@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import newLogo from '../../../../public/Images/Config/plus.png'
 import DialogoNewCategory from './DialogoNewCategory'
 import logoProducts from '../../../../public/Images/Config/products.jpg'
+import Progressbar from '../UIGeneral/ProgressBar'
 
 const Categories = (params) => {
 
@@ -15,6 +16,7 @@ const Categories = (params) => {
         nombre: '',
         imagen: ''
     })
+    const [progressBar, setProgressBar] = useState(false)
 
     useEffect(() => {
         if (params.estado != null) {
@@ -37,12 +39,16 @@ const Categories = (params) => {
     }
 
     function goProducts() {
+        setProgressBar(true)
         window.location = params.globalVars.myUrl + "product"
     }
 
     return (
         <AuthenticatedLayout user={params.auth} info={params.info} urlImagenes={params.globalVars.urlImagenes}>
             <Head title="Categorias" />
+            <div style={{ display: progressBar ? '' : 'none' }}>
+                <Progressbar progress={progressBar}></Progressbar>
+            </div>
             <div className='container table-responsive'>
                 <div align="center" className="row justify-content-center">
                     <div style={{ marginTop: '0.8em' }} className="row">

@@ -1,0 +1,17 @@
+{
+    "name": "Heladeria Oohz",
+    "short_name": "Heladeria Oohz",
+    "start_url": "/index.php",
+    "background_color": "#ffffff",
+    "description": "Tutorial of Laravel Package",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

@@ -22,13 +22,16 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                 <NavLink href={route('product.index')} active={route().current('product.index')}>
                                    Productos
                                 </NavLink>
-                                <NavLink  href={route('sale.index')} active={route().current('sale.index')}>
+                                <NavLink  href={route('shopping.index')} active={route().current('shopping.index')}>
                                    Ventas
+                                </NavLink>
+                                <NavLink   href={route('registerincomplete.index')} active={route().current('registerincomplete.index')}>
+                                   Clientes
                                 </NavLink>
 
                             </div>
                         </div>
-
+                       
                         <div className="hidden md:flex md:items-center md:ml-6">
                             <div className="ml-3 relative">
                                 <Dropdown>
@@ -99,8 +102,13 @@ export default function Authenticated({ user, header, children, globalVars }) {
                         </NavLink>
                     </div>
                     <div className="pt-2 pb-3 space-y-1">
-                        <NavLink href={route('sale.index')} active={route().current('sale.index')}>
+                        <NavLink href={route('shopping.index')} active={route().current('shopping.index')}>
                             Ventas
+                        </NavLink>
+                    </div>
+                    <div className="pt-2 pb-3 space-y-1">
+                        <NavLink href={route('registerincomplete.index')} active={route().current('registerincomplete.index')}>
+                            Clientes
                         </NavLink>
                     </div>
 

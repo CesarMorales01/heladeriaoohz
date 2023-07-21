@@ -23,7 +23,7 @@ class CategoryController extends Controller
     public function index(): Response
     {
         $auth = Auth()->user();
-        $categorias = DB::table('categories')->orderBy('id', 'desc')->get();
+        $categorias = DB::table('categorias')->orderBy('id', 'desc')->get();
         $globalVars = $this->global->getGlobalVars();
         $token = csrf_token();
        // $info = DB::table('info_pagina')->first();
@@ -40,7 +40,7 @@ class CategoryController extends Controller
             $file = $request->file('imagen');
             $fileName = time() . "-" . $file->getClientOriginalName();
             $upload = $request->file('imagen')->move($this->global->getGlobalVars()->dirImagenesCategorias, $fileName);
-            DB::table('categories')->insert([
+            DB::table('categorias')->insert([
                 'nombre' => $request->categoria,
                 'imagen' => $fileName
             ]);
@@ -51,19 +51,19 @@ class CategoryController extends Controller
 
     public function show(string $id)
     {   
-        $cate = DB::table('categories')->where('id', $id)->first();
-        $validarEnproductos=DB::table('products')->where('category_id', '=', $id)->first();
+        $cate = DB::table('categorias')->where('id', $id)->first();
+        $validarEnproductos=DB::table('productos')->where('category_id', '=', $id)->first();
         if($validarEnproductos!=null){
             $estado = "¡No puedes eliminar esta categoria porque esta en algunos productos!";
             $duracionAlert=2000;
         }else{
             unlink($this->global->getGlobalVars()->dirImagenesCategorias . $cate->imagen);
-            $deleted = DB::table('categories')->where('id', '=', $id)->delete();
+            $deleted = DB::table('categorias')->where('id', '=', $id)->delete();
             $estado = "¡Categoria eliminada!";
             $duracionAlert=1000;
         }
         $auth = Auth()->user();
-        $categorias = DB::table('categories')->orderBy('id', 'desc')->get();
+        $categorias = DB::table('categorias')->orderBy('id', 'desc')->get();
         $globalVars = $this->global->getGlobalVars();
         $info = DB::table('info_pagina')->first();
         $token = csrf_token();
@@ -93,24 +93,24 @@ class CategoryController extends Controller
             $file = $request->file('imagen');
             $fileName = time() . "-" . $file->getClientOriginalName();
             $upload = $request->file('imagen')->move($this->global->getGlobalVars()->dirImagenesCategorias, $fileName);
-            DB::table('categories')->where('id', $id)->update([
+            DB::table('categorias')->where('id', $id)->update([
                 'nombre' => $request->categoria,
                 'imagen' => $fileName
             ]);
-            DB::table('products')->where('category_id', '=', $request->idAnterior)->update([
+            DB::table('productos')->where('category_id', '=', $request->idAnterior)->update([
                 'category_id' => $request->id,
             ]);
             unlink($this->global->getGlobalVars()->dirImagenesCategorias . $request->nombreImagenAnterior);
         } else {
-            DB::table('categories')->where('id', $id)->update([
+            DB::table('categorias')->where('id', $id)->update([
                 'nombre' => $request->categoria
             ]);
-            DB::table('products')->where('category_id', '=', $request->idAnterior)->update([
+            DB::table('productos')->where('category_id', '=', $request->idAnterior)->update([
                 'category_id' => $request->id,
             ]);
         }
         $auth = Auth()->user();
-        $categorias = DB::table('categories')->orderBy('id', 'desc')->get();
+        $categorias = DB::table('categorias')->orderBy('id', 'desc')->get();
         $globalVars = $this->global->getGlobalVars();
         $info = DB::table('info_pagina')->first();
         $token = csrf_token();

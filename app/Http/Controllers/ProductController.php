@@ -4,16 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Query\JoinClause;
 use App\Models\GlobalVars;
-use App\Models\Product;
 use App\Traits\MetodosGenerales;
 
 class ProductController extends Controller
 {
-    
     public $global = null;
     use MetodosGenerales;
 
@@ -26,8 +23,8 @@ class ProductController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
-        $productos = DB::table('products')->leftJoin('categories', 'products.category_id', '=', 'categories.id')
-        ->select('products.*','categories.nombre as categoria')
+        $productos = DB::table('productos')->leftJoin('categorias', 'productos.category_id', '=', 'categorias.id')
+        ->select('productos.*','categorias.nombre as categoria')
         ->orderBy('id', 'desc')->paginate(100);
        // $info = DB::table('info_pagina')->first();
         return Inertia::render('Product/Products', compact('auth', 'productos', 'globalVars'));
@@ -40,7 +37,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categorias = DB::table('categories')->get();
+        $categorias = DB::table('categorias')->get();
         $producto = ['id' => '', 'nombre' => '', 'imagen' => ''];
         $globalVars = $this->global->getGlobalVars();
         $token = csrf_token();
@@ -53,7 +50,7 @@ class ProductController extends Controller
             $file = $request->file('imagen');
             $fileName = time() . "-" . $file->getClientOriginalName();
             $upload = $request->file('imagen')->move($this->global->getGlobalVars()->dirImagenes, $fileName);
-            DB::table('products')->insert([
+            DB::table('productos')->insert([
                 'referencia' => $request->referencia,
                 'category_id' => $request->categoria,
                 'nombre' => $request->nombre,
@@ -69,11 +66,11 @@ class ProductController extends Controller
             ]);
 
             $auth = Auth()->user();
-            $producto = DB::table('products')->join('imagenes_productos', function (JoinClause $join) use ($id) {
-                $join->on('products.id', '=',"imagenes_productos.fk_producto")
-                    ->where('products.id', '=', $id);
+            $producto = DB::table('productos')->join('imagenes_productos', function (JoinClause $join) use ($id) {
+                $join->on('productos.id', '=',"imagenes_productos.fk_producto")
+                    ->where('productos.id', '=', $id);
             })->get();
-            $categorias = DB::table('categories')->get();
+            $categorias = DB::table('categorias')->get();
             $globalVars = $this->global->getGlobalVars();
             $token = csrf_token();
             $estado = "¡Producto registrado!";
@@ -85,7 +82,6 @@ class ProductController extends Controller
     public function show(string $id) //: Response
     {
         // Eliminar en este metodo porque no se conseguido reescribir el method get por delete en el form react....
-
        // $validarEliminar = DB::table('promociones')->where('ref_producto', '=', $id)->first();
        $validarEliminar=null;
         if ($validarEliminar != null) {
@@ -94,11 +90,11 @@ class ProductController extends Controller
         } else {
             $estado = "¡Producto eliminado!";
             $duracionAlert = 1000;
-            $producto = DB::table('products')->join('imagenes_productos', function (JoinClause $join) use ($id) {
-                $join->on('products.id', '=', 'imagenes_productos.fk_producto')
-                    ->where('products.id', '=', $id);
+            $producto = DB::table('productos')->join('imagenes_productos', function (JoinClause $join) use ($id) {
+                $join->on('productos.id', '=', 'imagenes_productos.fk_producto')
+                    ->where('productos.id', '=', $id);
             })->get();
-            $deleted = DB::table('products')->where('id', '=', $id)->delete();
+            $deleted = DB::table('productos')->where('id', '=', $id)->delete();
             $deleted1 = DB::table('imagenes_productos')->where('fk_producto', '=', $id)->delete();
            // $deleted2 = DB::table('preguntas_sobre_productos')->where('producto', '=', $id)->delete();
             for ($i = 0; $i < count($producto); $i++) {
@@ -107,8 +103,8 @@ class ProductController extends Controller
         }
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
-        $productos = DB::table('products')->leftJoin('categories', 'products.category_id', '=', 'categories.id')
-        ->select('products.*','categories.nombre as categoria')
+        $productos = DB::table('productos')->leftJoin('categorias', 'productos.category_id', '=', 'categorias.id')
+        ->select('productos.*','categorias.nombre as categoria')
         ->orderBy('id', 'desc')->paginate(100);
        // $info = DB::table('info_pagina')->first();
         return Inertia::render('Product/Products', compact('auth', 'productos', 'estado', 'globalVars', 'duracionAlert'));
@@ -117,11 +113,11 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         //Este metodo devuelve un array, por tanto en componente react se debe tomar en los parms[0] y el id se registra en fk_producto.
-        $producto = DB::table('products')->join('imagenes_productos', function (JoinClause $join) use ($id) {
-            $join->on('products.id', '=', 'imagenes_productos.fk_producto')
-                ->where('products.id', '=', $id);
+        $producto = DB::table('productos')->join('imagenes_productos', function (JoinClause $join) use ($id) {
+            $join->on('productos.id', '=', 'imagenes_productos.fk_producto')
+                ->where('productos.id', '=', $id);
         })->get();
-        $categorias = DB::table('categories')->get();
+        $categorias = DB::table('categorias')->get();
         $globalVars = $this->global->getGlobalVars();
         $token = csrf_token();
        // $info = DB::table('info_pagina')->first();
@@ -140,7 +136,7 @@ class ProductController extends Controller
 
     public function actualizar(Request $request, string $id)
     {
-        DB::table('products')->where('id', $id)->update([
+        DB::table('productos')->where('id', $id)->update([
             'referencia' => $request->referencia,
             'category_id' => $request->categoria,
             'nombre' => $request->nombre,
@@ -149,11 +145,11 @@ class ProductController extends Controller
             'costo' => $request->costo,
             'valor' => $request->valor,
         ]);
-        $producto = DB::table('products')->join('imagenes_productos', function (JoinClause $join) use ($id) {
-            $join->on('products.id', '=', 'imagenes_productos.fk_producto')
-                ->where('products.id', '=', $id);
+        $producto = DB::table('productos')->join('imagenes_productos', function (JoinClause $join) use ($id) {
+            $join->on('productos.id', '=', 'imagenes_productos.fk_producto')
+                ->where('productos.id', '=', $id);
         })->get();
-        $categorias = DB::table('categories')->get();
+        $categorias = DB::table('categorias')->get();
         $globalVars = $this->global->getGlobalVars();
         $estado = "¡Producto actualizado!";
       //  $info = DB::table('info_pagina')->first();

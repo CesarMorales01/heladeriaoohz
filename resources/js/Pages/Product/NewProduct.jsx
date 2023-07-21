@@ -266,7 +266,7 @@ const NewProduct = (params) => {
                             <br /><br />
                             Precio de venta:
                             <br />
-                            <input className='form-control rounded' name='valor' onChange={cambioPrecio} type='number' required placeholder="valor" value={producto.valor == '' ? '' : producto.valor} />
+                            <input className='form-control rounded' name='valor' onChange={cambioPrecio} type='number' required placeholder="Valor" value={producto.valor == '' ? '' : producto.valor} />
                         </div>
                         <div style={{ marginTop: '1.5em' }} className="col-lg-6 col-md-6 col-sm-12 col-12" >
                             <input name='imagen' data-toggle="tooltip" id='fileImagen' title="Ingresa imagenes con fondo blanco, aprox 500x500 mp." type="file" disabled={producto.id == '' ? false : true} onChange={mostrarImagen} />

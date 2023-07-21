@@ -7,11 +7,13 @@ import Swal from 'sweetalert2'
 import newLogo from '../../../../public/Images/Config/plus.png'
 import listLogo from '../../../../public/Images/Config/list.png'
 import { TablaProductos } from './TablaProductos'
+import Progressbar from '../UIGeneral/ProgressBar'
 
 const Products = (params) => {
     const [productos, setProductos] = useState([])
     const [filterProducts, setFilterProducts] = useState(params.productos.data)
     const [noproductos, setNoProductos] = useState(false)
+    const [progressBar, setProgressBar] = useState(false)
 
     useEffect(() => {
         if (filterProducts.length == 0) {
@@ -68,16 +70,21 @@ const Products = (params) => {
     }
 
     function goCategories() {
+        setProgressBar(true)
         window.location = params.globalVars.myUrl + "category"
     }
 
     function newProduct() {
+        setProgressBar(true)
         window.location = params.globalVars.myUrl + "product/create"
     }
 
     return (
         <AuthenticatedLayout user={params.auth} info={params.info} url={params.globalVars.urlRoot} urlImagenes={params.globalVars.urlImagenes}>
             <Head title="Productos" />
+            <div style={{ display: progressBar ? '' : 'none' }}>
+                <Progressbar progress={progressBar}></Progressbar>
+            </div>
             <div style={{ textAlign: 'center' }} className='container'>
                 <div className="row justify-content-center">
                     <div style={{ marginTop: '0.8em' }} className="row">

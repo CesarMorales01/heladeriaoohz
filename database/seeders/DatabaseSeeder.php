@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
@@ -21,21 +19,22 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('123456')
         ]);
 
-        $cate=Category::create([
+        DB::table('categorias')->insert([
             'nombre'=> 'Helados',
              'imagen'=> 'helado.jpg'
         ]);
+        $id = DB::getPdo()->lastInsertId();
 
-        $product=Product::create([
-            'category_id'=> $cate->id,
+        DB::table('productos')->insert([
+            'category_id'=> $id,
             'nombre'=> 'Helado de fresa',
             'descripcion'=> 'Delicioso helado de fresa con crema de maní',
             'valor'=>'4000'
         ]);
-
+        $id = DB::getPdo()->lastInsertId();
         DB::table('imagenes_productos')->insert([
             'nombre_imagen'=>'heladofresa.jpg',
-            'fk_producto'=>$product->id
+            'fk_producto'=>$id
         ]);
 
 
