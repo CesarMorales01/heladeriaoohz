@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/category/actualizar/{id}', [CategoryController::class, 'actualizar'])->name('category.actualizar');
     Route::resource('/registerincomplete', ClientesImcompletosController::class);
     Route::post('/customer/actualizar/{id}', [ClientesController::class, 'actualizar'])->name('customer.actualizar');
+    Route::get('/customer/list/{state?}', [ClientesController::class, 'listar'])->name('customer.list');
+    Route::get('/customer/amend/{id}/{state?}', [ClientesController::class, 'editar'])->name('customer.editar');
     Route::resource('/customer', ClientesController::class);
    
 });

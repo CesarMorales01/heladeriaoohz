@@ -5,8 +5,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Swal from 'sweetalert2'
-import SelectMunicipios from '../Customer/SelectMunicipios';
-import DialogoAgregarTel from '../Customer/DialogoAgregarTel';
+import SelectMunicipios from './SelectMunicipios';
+import DialogoAgregarTel from './DialogoAgregarTel';
 import '../../../css/general.css'
 
 const NewClient = (params) => {
@@ -27,10 +27,9 @@ const NewClient = (params) => {
         correo: '',
         fecha: glob.getFecha()
     })
-    const [codigoEditar, setCodigoEditar] = useState('')
 
     useEffect(() => {
-        if (params.estado != null) {
+        if (params.estado != '') {
             Swal.fire({
                 title: params.estado,
                 icon: 'warning',
@@ -40,22 +39,61 @@ const NewClient = (params) => {
     }, [])
 
     useEffect(() => {
-        cargarDatos()
+        if (params.cliente.id != '') {
+            cargarDatos()
+        }
     }, [])
 
     function cargarDatos() {
         setNewDatosPersonales((valores) => ({
             ...valores,
-            usuario: params.cliente.name,
-            correo: params.cliente.email,
-            clave: params.cliente.password
+            nombre: params.cliente.nombre,
+            apellidos: params.cliente.apellidos,
+            cedula: params.cliente.cedula,
+            direccion: params.cliente.direccion,
+            info_direccion: params.cliente.info_direccion,
+            ciudad: params.cliente.ciudad,
+            departamento: params.cliente.departamento,
+            otros: params.cliente.otros,
+            usuario: params.cliente.usuario.name,
+            correo: params.cliente.usuario.email,
+            clave: params.cliente.usuario.password
         }))
+        setNombreCiudad()
+        setTelefonos()
+    }
+
+    function setTelefonos() {
+        let tels = newDatosPersonales.telefonos
+        for (let i = 0; i < params.cliente.telefonos.length; i++) {
+            tels.push(params.cliente.telefonos[i].telefono)
+        }
+        setNewDatosPersonales((valores) => ({
+            ...valores,
+            telefonos: tels
+        }))
+    }
+
+    function setNombreCiudad() {
+        for (let i = 0; i < params.municipios.length; i++) {
+            if (params.municipios[i].id == params.cliente.ciudad) {
+                document.getElementById('inputCiudad').value = params.municipios[i].nombre
+                document.getElementById('codCiudad').value = params.municipios[i].id
+            }
+        }
+        for (let i = 0; i < params.deptos.length; i++) {
+            if (params.deptos[i].id == params.cliente.departamento) {
+                document.getElementById('inputDepartamento').value = params.deptos[i].nombre
+                document.getElementById('codDepto').value = params.deptos[i].id
+            }
+        }
     }
 
     function cambioNombre(e) {
         setNewDatosPersonales((valores) => ({
             ...valores,
             nombre: e.target.value,
+            usuario: e.target.value.replace(' ', '.')
         }))
     }
 
@@ -170,30 +208,73 @@ const NewClient = (params) => {
         document.getElementById('btnLoadingUsuario').style.display = 'inline'
     }
 
+    function loadingOff() {
+        document.getElementById('btnModificarUsuario').style.display = 'inline'
+        document.getElementById('btnLoadingUsuario').style.display = 'none'
+    }
+
     function validarInfoDivUsuario(e) {
         e.preventDefault()
-        if (validarDatosVaciosDir()) {
-            if (newDatosPersonales.nombre == '' || newDatosPersonales.cedula == '') {
-                alertDatosFaltantes('Ingresa nombre y/o cédula!')
-            }
+        if (newDatosPersonales.nombre == '') {
+            alertDatosFaltantes('Ingresa nombre!')
         } else {
-            validarUsuarioExistente()
+            loadingOn()
+            // LLenar variables porque con vacio el servidor da error
+
+            let ced = newDatosPersonales.cedula
+            if (newDatosPersonales.cedula == '') {
+                ced = "vacio"
+            }
+            let correo = newDatosPersonales.correo
+            if (newDatosPersonales.correo == '') {
+                correo = "vacio"
+            }
+            const url = params.globalVars.myUrl + 'api/customer/getclient/' + ced + "/" + correo
+            fetch(url)
+                .then((response) => {
+                    return response.json()
+                }).then((json) => {
+                    if (params.cliente.id == '') {
+                        if (json.cliente == null && json.usuario == null) {
+                            document.getElementById('formCrear').submit()
+                        } else {
+                            loadingOff()
+                            alertDatosFaltantes('Ya existe un usuario con el número de identificación o el email ingresado!')
+                        }
+                    } else {
+                        let validado = 0
+                        if (json.cliente != null) {
+                            if (json.cliente.cedula == params.cliente.cedula) {
+                                validado++
+                            }
+                        } else {
+                            validado++
+                        }
+                        if (json.usuario != null) {
+                            if (json.usuario.email == params.cliente.usuario.email) {
+                                validado++
+                            }
+                        } else {
+                            validado++
+                        }
+                        if (validado == 2) {
+                            updateUsuario()
+                        } else {
+                            loadingOff()
+                            alertDatosFaltantes('Ya existe un usuario con el número de identificación o el email ingresado!')
+                        }
+                    }
+                })
         }
     }
 
-    function validarUsuarioExistente() {
-        const url = params.globalVars.myUrl + 'api/customer/getclient/' + newDatosPersonales.cedula+"/"+newDatosPersonales.correo
-        fetch(url)
-            .then((response) => {
-                return response.json()
-            }).then((json) => {
-                if (json.cliente != null) {
-                    alertDatosFaltantes('Ya existe un usuario con el número de identificación ingresado!')
-                } else {
-                    loadingOn()
-                    document.getElementById('formCrear').submit()
-                }
-            })
+
+
+
+    function updateUsuario() {
+        const form = document.getElementById("formCrear")
+        form.action = route('customer.actualizar', params.cliente.id)
+        form.submit()
     }
 
     function alertDatosFaltantes(mensaje) {
@@ -206,28 +287,12 @@ const NewClient = (params) => {
         })
     }
 
-    function validarDatosVaciosDir() {
-        let vacios = true
-        if (newDatosPersonales.usuario == '' || newDatosPersonales.email == '') {
-            alertDatosFaltantes('Ingresa usuario, email y/o contraseña')
-            vacios = true
-        } else {
-            if (newDatosPersonales.direccion == '' || newDatosPersonales.ciudad == '' || newDatosPersonales.ciudad == null || newDatosPersonales.telefonos.length == 0) {
-                alertDatosFaltantes('Ingresa dirección, ciudad de residencia y al menos un télefono!')
-                vacios = true
-            } else {
-                vacios = false
-            }
-        }
-        return vacios
-    }
-
     function enviarBorrar() {
         document.getElementById('btnEliminar').click()
         loadingOn()
     }
 
-    function abrirDialogoEliminar(){
+    function abrirDialogoEliminar() {
         Swal.fire({
             title: '¿Eliminar este cliente?',
             icon: 'warning',
@@ -235,11 +300,11 @@ const NewClient = (params) => {
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Si, eliminar!'
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-              enviarBorrar()
+                enviarBorrar()
             }
-          })
+        })
     }
 
     return (
@@ -249,10 +314,12 @@ const NewClient = (params) => {
             <Head title="Clientes" />
             <div className="container">
                 <h1 style={{ marginTop: '0.5em', fontSize: '1.5em' }} id="titulo" className="text-center"> {params.cliente.id == '' ? 'Nuevo cliente' : 'Editar cliente'}</h1>
-                <a id='btnEliminar' style={{ display: 'none'}} href={route('customer.destroy', newDatosPersonales.cedula)}></a>
-                <form action={route('registerincomplete.store')} id='formCrear' method='post' onSubmit={validarInfoDivUsuario} >
+                <a id='btnEliminar' style={{ display: 'none' }} href={route('customer.destroy', newDatosPersonales.cedula)}></a>
+                <form action={route('customer.store')} id='formCrear' method='post' onSubmit={validarInfoDivUsuario} >
                     <input type="hidden" name='_token' value={params.token} />
                     <input type="hidden" name='fecha' value={newDatosPersonales.fecha} />
+                    <input type="hidden" name='cedulaAnterior' value={params.cliente.cedula} />
+                    <input type="hidden" name='id_keys' value={params.cliente.id != '' ? params.cliente.usuario.id : ''} />
                     {/* datos personales*/}
                     <div id="div_datos_personales" style={{ backgroundColor: '#f4f4f4', padding: '0.4em' }}>
                         <div className="row justify-content-center" >
@@ -260,33 +327,28 @@ const NewClient = (params) => {
                                 <strong style={{ fontSize: '1em' }} >Datos personales</strong>
                                 <br />
                                 <p style={{ textAlign: 'justify', color: 'black' }}>Nombres</p>
-                                <input type="text" name='nombre' onChange={cambioNombre} id='inputNombre' className="form-control" value={newDatosPersonales.nombre == '' ? '' : newDatosPersonales.nombre} />
-                                <br />
+                                <input type="text" name='nombre' onChange={cambioNombre} id='inputNombre' className="form-control rounded" value={newDatosPersonales.nombre == '' ? '' : newDatosPersonales.nombre} />
                             </div>
-
                             <div className="col-lg-4 col-sm-12" >
                                 <br />
-                                <p style={{ textAlign: 'justify', color: 'black' }}>Apellidos</p>
-                                <input type="text" name='apellidos' onChange={cambioApellidos} id='inputApellidos' className="form-control" value={newDatosPersonales.apellidos == '' ? '' : newDatosPersonales.apellidos} />
-                                <br />
+                                <p style={{ textAlign: 'justify', color: 'black' }}>Apellidos (Opcional)</p>
+                                <input type="text" name='apellidos' onChange={cambioApellidos} id='inputApellidos' className="form-control rounded" value={newDatosPersonales.apellidos == '' ? '' : newDatosPersonales.apellidos} />
                             </div>
                         </div>
-                        <div className="row justify-content-center" >
+                        <div style={{ marginTop: '0.8em' }} className="row justify-content-center" >
                             <div className="col-lg-4 col-sm-12" >
-                                <p style={{ textAlign: 'center', color: 'black' }}>Número de cédula</p>
+                                <p style={{ textAlign: 'center', color: 'black' }}>Número de cédula (Opcional)</p>
                             </div>
                             <div className="col-lg-4 col-sm-12" >
-                                <input name='cedula' readOnly={codigoEditar == '' ? false : true} type="number" id='inputCedula' onChange={cambioCedula} placeholder="Número de cédula" className="form-control" defaultValue={newDatosPersonales.cedula == '' ? '' : newDatosPersonales.cedula} />
+                                <input name='cedula' type="number" id='inputCedula' onChange={cambioCedula} placeholder="Número de cédula" className="form-control rounded" defaultValue={newDatosPersonales.cedula == '' ? '' : newDatosPersonales.cedula} />
                             </div>
                         </div>
-                        <br />
                     </div>
-                    <br />
                     {/* Direccion de envio*/}
                     <div style={{ backgroundColor: '#f4f4f4', padding: '0.5em' }}>
                         <div className="row justify-content-center" >
                             <div className="col-lg-8 col-sm-12">
-                                <strong style={{ fontSize: '1em' }} >Dirección de envio</strong>
+                                <strong style={{ fontSize: '1em' }} >Dirección de envio (Opcional)</strong>
                                 <textarea name='direccion' onChange={cambioDireccion} id='inputDireccion' rows="2" className="form-control" value={newDatosPersonales.direccion == '' ? '' : newDatosPersonales.direccion}></textarea>
                                 <br />
                             </div>
@@ -302,19 +364,19 @@ const NewClient = (params) => {
                         <div style={{ textAlign: 'center' }} className="row justify-content-center" >
                             <div className="col-lg-4 col-sm-12" >
                                 <strong style={{ fontSize: '1em' }} >Ciudad</strong>
-                                <input name='ciudad' type="text" readOnly placeholder="Ciudad" className="form-control" id="inputCiudad" />
+                                <input name='ciudad' type="text" readOnly placeholder="Ciudad" className="form-control rounded" id="inputCiudad" />
                                 <input name='codCiudad' type="hidden" id="codCiudad" />
                             </div>
                             <br /><br />
                             <div className="col-lg-4 col-sm-12">
                                 <strong style={{ fontSize: '1em' }} >Departamento</strong>
-                                <input name='departamento' type="text" readOnly placeholder="Departamento" className="form-control" id="inputDepartamento" />
+                                <input name='departamento' type="text" readOnly placeholder="Departamento" className="form-control rounded" id="inputDepartamento" />
                                 <input name='codDepto' type="hidden" id="codDepto" />
                                 <br />
                             </div>
                         </div>
 
-                        <p style={{ textAlign: 'center', color: 'black' }}>Télefonos (<strong style={{ color: ' red' }}>*</strong>Obligatorio)</p>
+                        <p style={{ textAlign: 'center', color: 'black' }}>Télefonos (<strong style={{ color: ' red' }}></strong>Opcional)</p>
                         {/* div telefonos */}
                         <div style={{ textAlign: 'center' }} className="container">
                             <div className="row justify-content-center" >
@@ -339,7 +401,6 @@ const NewClient = (params) => {
                         </div>
                         {/* fin div telefonos */}
                     </div>
-                    <br />
                     {/* Datos usuario */}
                     <div style={{ backgroundColor: '#f4f4f4', padding: '0.3em' }}>
                         <div className="row justify-content-center">
@@ -347,15 +408,15 @@ const NewClient = (params) => {
                                 <strong style={{ fontSize: '1em' }} >Datos de cuenta</strong>
                                 <div style={{ backgroundColor: '#f4f4f4', padding: '0.3em' }}>
                                     <p style={{ textAlign: 'justify', color: 'black' }}>Nombre de usuario</p>
-                                    <input name='usuario' type="text" onChange={cambioUsuario} className="form-control" id="inputUsuario" value={newDatosPersonales.usuario == '' ? '' : newDatosPersonales.usuario} />
+                                    <input name='usuario' type="text" onChange={cambioUsuario} className="form-control rounded" id="inputUsuario" value={newDatosPersonales.usuario == '' ? '' : newDatosPersonales.usuario} />
                                     <br />
-                                    <p style={{ textAlign: 'justify', color: 'black' }}>E-mail</p>
-                                    <input name='correo' type="text" readOnly className="form-control" id="inputCorreo" defaultValue={newDatosPersonales.correo == '' ? '' : newDatosPersonales.correo} />
+                                    <p style={{ textAlign: 'justify', color: 'black' }}>E-mail (Opcional)</p>
+                                    <input name='correo' type="text" onChange={cambioCorreo} className="form-control rounded" id="inputCorreo" defaultValue={newDatosPersonales.correo == '' ? '' : newDatosPersonales.correo} />
                                     <br />
                                 </div>
-                                <strong style={{ fontSize: '1em' }} >Contraseña</strong>
-                                <div style={{ backgroundColor: '#f4f4f4', padding: '0.5em' }}>
-                                    <input name='clave' type="password" onChange={cambioClave} id="inputClave" className="form-control" value={newDatosPersonales.clave == '' ? '' : newDatosPersonales.clave} />
+                                <strong style={{ fontSize: '1em', display: 'none' }} >Contraseña</strong>
+                                <div style={{ backgroundColor: '#f4f4f4', padding: '0.5em', display: 'none' }}>
+                                    <input name='clave' type="password" onChange={cambioClave} id="inputClave" className="form-control rounded" value={newDatosPersonales.clave == '' ? '' : newDatosPersonales.clave} />
                                     <br />
                                 </div>
                                 <div style={{ textAlign: 'center' }} className="row justify-content-center">
@@ -368,7 +429,7 @@ const NewClient = (params) => {
                                     </div>
                                     <br /><br />
                                     <div className="col-12" >
-                                        <button onClick={abrirDialogoEliminar} id='btnDialogoEliminar' style={{ marginTop: '0.5em', display: codigoEditar == '' ? 'none' : 'inline', backgroundColor: 'red' }} className="btn btn-danger" type="button">
+                                        <button onClick={abrirDialogoEliminar} id='btnDialogoEliminar' style={{ marginTop: '0.5em', display: params.cliente.id == '' ? 'none' : 'inline', backgroundColor: 'red' }} className="btn btn-danger" type="button">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
                                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
                                                 <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />

@@ -25,7 +25,7 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                 <NavLink  href={route('shopping.index')} active={route().current('shopping.index')}>
                                    Ventas
                                 </NavLink>
-                                <NavLink   href={route('registerincomplete.index')} active={route().current('registerincomplete.index')}>
+                                <NavLink   href={route('customer.list', 'nothing')} active={route().current('customer.list')}>
                                    Clientes
                                 </NavLink>
 
@@ -107,7 +107,7 @@ export default function Authenticated({ user, header, children, globalVars }) {
                         </NavLink>
                     </div>
                     <div className="pt-2 pb-3 space-y-1">
-                        <NavLink href={route('registerincomplete.index')} active={route().current('registerincomplete.index')}>
+                        <NavLink href={route('customer.list', 'nothing')} active={route().current('customer.list')}>
                             Clientes
                         </NavLink>
                     </div>

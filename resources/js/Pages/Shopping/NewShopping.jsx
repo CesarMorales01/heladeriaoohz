@@ -15,6 +15,7 @@ const NuevaCompra = (params) => {
     const [datosCompra, setDatosCompra] = useState({
         cliente: '',
         nombreCliente: '',
+        comentario_cliente: '',
         fecha: '',
         total_compra: 0,
         domicilio: 0,
@@ -29,6 +30,9 @@ const NuevaCompra = (params) => {
         id: '',
         compra_n: ''
     })
+    const [opcionesPago, setOpcionesPago] = useState([
+        'Efectivo', 'Pago electronico'
+    ])
 
     useEffect(() => {
         if (params.datosCompra.id == '') {
@@ -43,7 +47,6 @@ const NuevaCompra = (params) => {
     useEffect(() => {
         if (datosCompra.listaProductos.length > 0) {
             calcularTotales(datosCompra.listaProductos)
-            setCheckedRadioPagos()
         }
     }, [datosCompra.medio_de_pago])
 
@@ -64,6 +67,7 @@ const NuevaCompra = (params) => {
             fecha: params.datosCompra.fecha,
             cliente: params.datosCompra.cliente.cedula,
             nombreCliente: params.datosCompra.cliente.nombre,
+            comentario_cliente: params.datosCompra.comentario_cliente,
             total_compra: params.datosCompra.total_compra,
             domicilio: params.datosCompra.domicilio,
             medio_de_pago: params.datosCompra.medio_de_pago,
@@ -103,23 +107,14 @@ const NuevaCompra = (params) => {
     }
 
     function totalizarModoDepago(subtotal) {
-        setCheckedRadioPagos()
         let totalModoDepago = 0;
+        /*
         if (datosCompra.medio_de_pago !== 'Efectivo') {
             const porcentaje = params.datosPagina.comision_pasarela_pagos / 100
             totalModoDepago = parseFloat(porcentaje) * parseFloat(subtotal)
         }
+        */
         return totalModoDepago
-    }
-
-    function setCheckedRadioPagos() {
-        if (datosCompra.medio_de_pago === 'Efectivo') {
-            document.getElementById('contraentrega').checked = true
-            document.getElementById('wompi').checked = false
-        } else {
-            document.getElementById('wompi').checked = true
-            document.getElementById('contraentrega').checked = false
-        }
     }
 
     function alert(mensaje) {
@@ -227,7 +222,6 @@ const NuevaCompra = (params) => {
 
     function fetchRegistrarCompra() {
         const url = params.globalVars.myUrl + 'shopping/save?_token=' + params.token
-        console.log(url)
         fetch(url, {
             method: 'POST',
             body: JSON.stringify(datosCompra),
@@ -253,10 +247,10 @@ const NuevaCompra = (params) => {
         document.getElementById('btnLoading').style.display = 'none'
     }
 
-    function cambiarModoPago(metodo) {
+    function cambiarModoPago(e) {
         setDatosCompra((valores) => ({
             ...valores,
-            medio_de_pago: metodo
+            medio_de_pago: e.target.value
         }))
     }
 
@@ -268,7 +262,7 @@ const NuevaCompra = (params) => {
         if (validarSiListaProductos) {
             masCant(e.target.value)
         } else {
-            if(validarInventario(e.target.value)){
+            if (validarInventario(e.target.value)) {
                 return
             }
             let nombre = ''
@@ -351,7 +345,6 @@ const NuevaCompra = (params) => {
     function validarInventario(id) {
         let cantidadEnInventario = 0
         let boolean = false
-        
         params.productos.forEach(element => {
             if (element.id == id) {
                 cantidadEnInventario = element
@@ -363,7 +356,6 @@ const NuevaCompra = (params) => {
                 cantCarrito = element.cantidad
             }
         })
-        console.log(cantCarrito)
         if (cantidadEnInventario.cantidad < cantCarrito + 1 && cantidadEnInventario.cantidad != null) {
             alert('Hay ' + cantidadEnInventario.cantidad + " unidades en inventario!")
             boolean = true
@@ -380,7 +372,7 @@ const NuevaCompra = (params) => {
             reiniciarProductos()
             setTimeout(() => {
                 const updatedArray = temp.map(p =>
-                    p.codigo === id ? { ...p, cantidad: parseInt(p.cantidad)+ 1 }
+                    p.codigo === id ? { ...p, cantidad: parseInt(p.cantidad) + 1 }
                         : p
                 )
                 setDatosCompra((valores) => ({
@@ -419,6 +411,13 @@ const NuevaCompra = (params) => {
         }))
     }
 
+    function cambioComentarioCliente(e) {
+        setDatosCompra((valores) => ({
+            ...valores,
+            comentario_cliente: e.target.value,
+        }))
+    }
+
     return (
         <AuthenticatedLayout user={params.auth} info={params.datosPagina} urlImagenes={params.globalVars.urlImagenes}>
             <Head title="Productos" />
@@ -429,15 +428,16 @@ const NuevaCompra = (params) => {
                         <h6 style={{ marginTop: '0.2em' }}>Fecha de compra:</h6>
                         <input type="date" onChange={cambioFecha} name="fecha" id="inputDate" />
                         <br />
-                        <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar cliente</p>
+                        <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar cliente (Opcional)</p>
                         <SelectClientes getCliente={getCliente} clientes={params.clientes}></SelectClientes>
                         <input type="text" style={{ marginTop: '0.2em' }} readOnly id='inputNombre' className="form-control" value={datosCompra.nombreCliente == '' ? '' : datosCompra.nombreCliente} />
+                        <textarea style={{ marginTop: '0.4em' }} name='comentario_cliente' placeholder='Comentario cliente...' onChange={cambioComentarioCliente} className="form-control" value={datosCompra.comentario_cliente}></textarea>
                         <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar productos</p>
                         <div onMouseOver={validarCliente}>
                             <SelectProductos obtenerProducto={getProducto} productos={params.productos}></SelectProductos>
                             <ShoppingCart masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos}></ShoppingCart>
                         </div>
-                        <textarea name='comentarios' placeholder='Comentarios...' onChange={cambioComentario} className="form-control" value={datosCompra.comentarios}></textarea>
+                        <textarea name='comentarios' placeholder='Comentarios compra...' onChange={cambioComentario} className="form-control" value={datosCompra.comentarios}></textarea>
                     </div>
 
                     <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
@@ -450,28 +450,15 @@ const NuevaCompra = (params) => {
                             <h6 style={{ texAlign: 'center', marginTop: '0.4em' }}>Total con envio</h6>
                             <h6 style={{ color: 'green', textAlign: 'center', marginBottom: '0.4em' }}>$ {glob.formatNumber(parseInt(datosCompra.total_compra) + parseInt(datosCompra.domicilio))}</h6>
                             <hr style={{ height: '2px', borderWidth: '0', color: 'gray', backgroundColor: 'gray' }}></hr>
-                            <h6 style={{ marginTop: '0.4em' }}>Forma de pago</h6>
-                            <div style={{ padding: '1em' }} className='row'>
-                                <div onClick={() => cambiarModoPago('Contraentrega')} style={{ padding: '1vh', cursor: 'pointer' }} className="container card col-6" >
-                                    <div className='row'>
-                                        <div className="col-6">
-                                            <input type="radio" id="contraentrega" name="medio_pago" value="contraentrega" />
-                                        </div>
-                                        <div className="col-6">
-                                            <span>Efectivo </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div onClick={() => cambiarModoPago('Electronico')} style={{ padding: '1vh', cursor: 'pointer', display: 'none' }} className="container card col-6" >
-                                    <div className='row'>
-                                        <div className="col-6">
-                                            <input type="radio" id="wompi" name="medio_pago" value="wompi" />
-                                        </div>
-                                        <div className="col-6">
-                                            <span>Pago en línea </span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div style={{ padding: '1em' }}>
+                                Forma de pago:
+                                <select onChange={cambiarModoPago} name='categoria' id='selectCate' className="form-select rounded" >
+                                    {opcionesPago.map((item, index) => {
+                                        return (
+                                            <option key={index} value={item} selected={item === datosCompra.medio_de_pago}>{item}</option>
+                                        )
+                                    })}
+                                </select>
                             </div>
                             <h6 style={{ textAlign: 'center', display: 'none' }}>Costo medio de pago</h6>
                             <input name='medio_de_pago' type='hidden' className="form-control" onChange={cambioCostoMedioPago} style={{ color: 'green', textAlign: 'center' }} value={datosCompra.costo_medio_pago}></input>

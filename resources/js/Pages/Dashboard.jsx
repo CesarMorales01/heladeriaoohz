@@ -53,6 +53,14 @@ export default function Dashboard(params) {
                                     </div>
                                 </div>
                             </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                                <div onClick={goVentas} className="card border border-primary card-flyer pointer">
+                                    <img style={{ width: '10em', height: '10em', marginTop: '1em' }} src={logoRegistradora} className="card-img-top img-fluid centerImg" alt="" />
+                                    <div style={{ textAlign: 'center' }} className="card-body">
+                                        <h2 className="card-title superTitulo">Ventas</h2>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <input style={{ display: 'none' }} type="button" value="Imprimir" onClick={imprimir} />

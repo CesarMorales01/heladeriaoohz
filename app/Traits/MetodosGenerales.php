@@ -34,4 +34,19 @@ trait MetodosGenerales
         return $compran;
     }
 
+    public function ingresar_telefonos($request)
+    {
+        DB::table('telefonos_clientes')->where('cedula', '=', $request->cedulaAnterior)->delete();
+        for ($i = 0; $i < count($request->telefonos); $i++) {
+            $token = strtok($request->telefonos[$i], ",");
+            while ($token !== false) {
+                DB::table('telefonos_clientes')->insert([
+                    'cedula' => $request->cedula,
+                    'telefono' => $token
+                ]);
+                $token = strtok(",");
+            }
+        }
+    }
+
 }

@@ -67,11 +67,13 @@ class ShoppingController extends Controller
         }
         DB::table('lista_compras')->insert([
             'cliente' => $datos->cliente,
+            'comentario_cliente' => $datos->comentario_cliente,
             'compra_n' => $compra_n,
             'fecha' => $datos->fecha,
             'total_compra' => $datos->total_compra,
             'domicilio' => $datos->domicilio,
             'medio_de_pago' => $datos->medio_de_pago,
+            'costo_medio_pago'=>$datos->costo_medio_pago,
             'comentarios' => $datos->comentarios,
             'estado' => 'Recibida',
             'vendedor' => Auth()->user()->name
@@ -104,10 +106,12 @@ class ShoppingController extends Controller
         $datos = json_decode(file_get_contents('php://input'));
         DB::table('lista_compras')->where('id', '=', $datos->id)->update([
             'cliente' => $datos->cliente,
+            'comentario_cliente' => $datos->comentario_cliente,
             'fecha' => $datos->fecha,
             'total_compra' => $datos->total_compra,
             'domicilio' => $datos->domicilio,
             'medio_de_pago' => $datos->medio_de_pago,
+            'costo_medio_pago'=>$datos->costo_medio_pago,
             'comentarios' => $datos->comentarios,
             'estado' => 'Recibida'
         ]);
@@ -204,7 +208,7 @@ class ShoppingController extends Controller
         $globalVars = $this->global->getGlobalVars();
         $productos = $this->all_products();
         $token = csrf_token();
-        $datosCompra = DB::table('lista_compras')->where('id', '=', $id)->first();
+        $datosCompra = DB::table('lista_compras')->where('cliente', '=', $id)->first();
         $listaProductos = DB::table('lista_productos_comprados')->where('cliente', '=', $id)->get();
         $datosCompra->listaProductos = $listaProductos;
         $cliente = DB::table('clientes')->where('cedula', '=', $id)->first();
