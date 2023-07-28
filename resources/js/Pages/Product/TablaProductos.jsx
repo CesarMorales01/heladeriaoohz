@@ -19,15 +19,15 @@ export const TablaProductos = (params) => {
     }
 
     return (
-        <div className='container table-responsive'>
-            <table className="table table-striped ">
-                <thead>
+        <div style={{ marginTop: '0.5em' }} className='container table-responsive'>
+            <table className="table table-striped roundedTable">
+                <thead className='navBarFondo align-middle'>
                     <tr>
-                        <th scope="col">Codigo</th>
-                        <th scope="col">Categoria</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Cant</th>
-                        <th scope="col">Precio</th>
+                        <th  style={{ textAlign: 'center' }} scope="col">Codigo</th>
+                        <th  style={{ textAlign: 'center' }} scope="col">Categoria</th>
+                        <th  style={{ textAlign: 'center' }} scope="col">Nombre</th>
+                        <th  style={{ textAlign: 'center' }} scope="col">Cant</th>
+                        <th  style={{ textAlign: 'center' }} scope="col">Precio</th>
                     </tr>
                 </thead>
                 <tbody>

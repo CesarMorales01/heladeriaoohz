@@ -34,6 +34,24 @@ const ShoppingCart = (params) => {
         })
     }
 
+    function validarInventario(item){
+        let mostrar=''
+        //validar si se esta editando: validar si mostrar
+        if(params.editando!=''){
+            params.productos.forEach(element => {
+                let encontrarProducto=null
+                if(element.id==item.codigo){
+                    encontrarProducto=element
+                    // si cantidad en productos no es null no mostrar
+                    if(element.cantidad!=null){
+                        mostrar='none'
+                    }
+                }
+            });
+        }
+        return mostrar
+    }
+
     return (
         <div className='border'>
             <input type='hidden' id='inputGoNuevaCompra' onClick={() => params.borrarProducto(idEliminar)} ></input>
@@ -64,7 +82,7 @@ const ShoppingCart = (params) => {
                                     <td><span style={{ color: 'green', marginLeft: '0.5em' }}>{item.cantidad}</span></td>
                                     <td>${glob.formatNumber(item.precio * item.cantidad)}</td>
                                     <td>
-                                        <button onClick={() => params.masCant(item.codigo)} className="btn btn-light btn-sm">
+                                        <button style={{ display: validarInventario(item) }} onClick={() => params.masCant(item.codigo)} className="btn btn-light btn-sm">
                                             <svg style={{ color: 'green' }} xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-plus-square" viewBox="0 0 16 16">
                                                 <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
@@ -72,7 +90,7 @@ const ShoppingCart = (params) => {
                                         </button>
                                     </td>
                                     <td>
-                                        <button onClick={() => params.menosCant(item.codigo)} className="btn btn-light btn-sm">
+                                        <button style={{ display: validarInventario(item) }} onClick={() => params.menosCant(item.codigo)} className="btn btn-light btn-sm">
                                             <svg style={{ color: 'green' }} xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-dash-square" viewBox="0 0 16 16">
                                                 <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />

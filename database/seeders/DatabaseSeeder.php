@@ -37,6 +37,16 @@ class DatabaseSeeder extends Seeder
             'fk_producto'=>$id
         ]);
 
+        DB::table('categorias_ingresos')->insert([
+            'nombre'=> 'Rendimientos financieros',
+        ]);
+        
+        DB::table('ingresos')->insert([
+            'fecha'=>now(),
+            'category_id'=>DB::getPdo()->lastInsertId(),
+            'valor'=>10000,
+            'comentario'=>'Intereses cdt'
+        ]);
 
 
         

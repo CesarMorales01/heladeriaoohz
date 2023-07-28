@@ -34,6 +34,7 @@ class GlobalFunctions {
 
     formatFecha(fecha){
       var fecha = new Date(fecha); //Fecha actual
+      console.log(fecha)
       var mes = fecha.getMonth()+1; //obteniendo mes
       var dia = fecha.getDate(); //obteniendo dia
       var ano = fecha.getFullYear(); //obteniendo año

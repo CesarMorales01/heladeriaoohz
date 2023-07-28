@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Checkbox from '@/Components/Checkbox';
 import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
@@ -10,6 +10,7 @@ import GlobalFunctions from '../services/GlobalFunctions';
 
 export default function Login({ status, canResetPassword }) {
     const glob = new GlobalFunctions();
+    const [message, setMessage] = useState('')
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -24,12 +25,15 @@ export default function Login({ status, canResetPassword }) {
     }, []);
 
     useEffect(() => {
-        if(errors.email=='These credentials do not match our records.'){
+        if (errors.email == 'These credentials do not match our records.') {
+            setMessage('Email o contraseña inválidos!')
             loadingOff()
-            errors.email=''
+            setTimeout(() => {
+                setMessage('')
+            }, 5000);
         }
     });
-    
+
     function validarRemember() {
         if (glob.getCookie('email') != '') {
             setData((valores) => ({
@@ -58,6 +62,10 @@ export default function Login({ status, canResetPassword }) {
 
     function goLogin() {
         loadingOn()
+        var validEmail = /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
+        if (validEmail.test(data.email)) {}else{
+            loadingOff()
+        }
     }
 
     return (
@@ -80,8 +88,7 @@ export default function Login({ status, canResetPassword }) {
                         isFocused={true}
                         onChange={(e) => setData('email', e.target.value)}
                     />
-
-                    <InputError message={errors.email} className="mt-2" />
+                    <span style={{ color: 'red' }}>{message}</span>
                 </div>
 
                 <div className="mt-4">
@@ -96,8 +103,6 @@ export default function Login({ status, canResetPassword }) {
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
-
-                    <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div className="block mt-4">
@@ -119,8 +124,8 @@ export default function Login({ status, canResetPassword }) {
                         >
                             ¿Olvidaste tu contraseña?
                         </Link>
-                    )}   
-                    <button onClick={goLogin}  id='btnLogin' style={{ backgroundColor: '#0ea6ab' }} className="ml-4 btn btn-primary" disabled={processing}>
+                    )}
+                    <button onClick={goLogin} id='btnLogin' style={{ backgroundColor: '#0ea6ab' }} className="ml-4 btn btn-primary" disabled={processing}>
                         Log in
                     </button>
                     <button type='button' id='btnLoginLoading' disabled style={{ backgroundColor: 'gray', display: 'none' }} className="ml-4 btn btn-primary">

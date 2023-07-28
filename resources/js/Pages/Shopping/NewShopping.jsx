@@ -80,10 +80,10 @@ const NuevaCompra = (params) => {
             compra_n: params.datosCompra.compra_n
         }))
         setTimeout(() => {
-            calcularTotales(array)
+           // calcularTotales(array)
         }, 100);
     }
-
+  
     function calcularTotales(prods) {
         let totales = {
             subtotal: 0,
@@ -96,7 +96,6 @@ const NuevaCompra = (params) => {
         }
         //costo envio
         totales.costoEnvio = getCostoEnvio(totales.subtotal)
-
         totales.costoMedioPago = totalizarModoDepago(totales.subtotal)
         setDatosCompra((valores) => ({
             ...valores,
@@ -356,7 +355,8 @@ const NuevaCompra = (params) => {
                 cantCarrito = element.cantidad
             }
         })
-        if (cantidadEnInventario.cantidad < cantCarrito + 1 && cantidadEnInventario.cantidad != null) {
+        const nuevaCantidad=parseInt(cantCarrito) + parseInt(1)
+        if (cantidadEnInventario.cantidad < nuevaCantidad && cantidadEnInventario.cantidad != null) {
             alert('Hay ' + cantidadEnInventario.cantidad + " unidades en inventario!")
             boolean = true
         }
@@ -435,7 +435,7 @@ const NuevaCompra = (params) => {
                         <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar productos</p>
                         <div onMouseOver={validarCliente}>
                             <SelectProductos obtenerProducto={getProducto} productos={params.productos}></SelectProductos>
-                            <ShoppingCart masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos}></ShoppingCart>
+                            <ShoppingCart masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos} productos={params.productos} editando={datosCompra.id}></ShoppingCart>
                         </div>
                         <textarea name='comentarios' placeholder='Comentarios compra...' onChange={cambioComentario} className="form-control" value={datosCompra.comentarios}></textarea>
                     </div>

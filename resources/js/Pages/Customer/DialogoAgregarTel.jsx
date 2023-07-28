@@ -1,7 +1,7 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
 const DialogoAgregarTel = (params) => {
     const [telefono, setTelefono] = useState('')
@@ -20,7 +20,7 @@ const DialogoAgregarTel = (params) => {
 
     return (
         <div className="modal fade" id="dialogoNewTel">
-            <div className="modal-dialog">
+            <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-body">
                         <span id="alert_check_contra" style={{ color: 'black' }} >Nuevo telefono</span>

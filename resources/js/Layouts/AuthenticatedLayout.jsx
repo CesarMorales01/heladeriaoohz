@@ -5,10 +5,6 @@ import React, { useState, useEffect } from 'react'
 export default function Authenticated({ user, header, children, globalVars }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false)
 
-    useEffect(() => {
-        
-    }, [])
-
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className='navBarFondo' >
@@ -27,6 +23,9 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                 </NavLink>
                                 <NavLink   href={route('customer.list', 'nothing')} active={route().current('customer.list')}>
                                    Clientes
+                                </NavLink>
+                                <NavLink   href={route('income.list', 'nothing')} active={route().current('income.list')}>
+                                   Ingresos
                                 </NavLink>
 
                             </div>
@@ -109,6 +108,11 @@ export default function Authenticated({ user, header, children, globalVars }) {
                     <div className="pt-2 pb-3 space-y-1">
                         <NavLink href={route('customer.list', 'nothing')} active={route().current('customer.list')}>
                             Clientes
+                        </NavLink>
+                    </div>
+                    <div className="pt-2 pb-3 space-y-1">
+                        <NavLink href={route('income.list', 'nothing')} active={route().current('income.list')}>
+                            Ingresos
                         </NavLink>
                     </div>
 

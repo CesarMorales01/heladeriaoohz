@@ -9,11 +9,13 @@ const DialogoCompraN = (params) => {
     const [lista, setLista] = useState([])
     const [cliente, setCliente] = useState(0)
     const [compran, setCompran] = useState(0)
+    const [idCompra, setIdCompra] = useState(0)
 
     useEffect(() => {
         if (Object.keys(params.datos).length > 0) {
             if (params.datos.cliente.cedula != cliente || params.datos.compra_n != compran) {
                 const array = []
+                setIdCompra(params.datos.id)
                 setLista(array)
                 setCliente(params.datos.cliente.cedula)
                 setCompran(params.datos.compra_n)
@@ -26,7 +28,7 @@ const DialogoCompraN = (params) => {
     }, [cliente, compran])
 
     function fetchProductos() {
-        const enlace = params.url + 'shopping/shoppingproducts/' + cliente + '/' + compran
+        const enlace = params.url + 'shopping/shoppingproducts/' + idCompra
         fetch(enlace).then((response) => {
             return response.json()
         }).then((json) => {
@@ -50,10 +52,10 @@ const DialogoCompraN = (params) => {
 
     return (
         <div className="modal fade" id='dialogoCompraN' tabIndex="-1" >
-            <div className="modal-dialog modal-lg">
+            <div className="modal-dialog modal-lg modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title" id="exampleModalLabel">{compran == 0 ? '' : 'Lista productos compra N°:' + params.datos.compra_n + ' de ' + params.datos.cliente.nombre}</h5>
+                        <h5 className="modal-title" id="exampleModalLabel">{compran == 0 ? '' : 'Lista productos compra N°: ' + params.datos.compra_n + '. ' + params.datos.cliente.nombre}</h5>
                     </div>
                     <div className="modal-body">
                         <div className='container table-responsive'>

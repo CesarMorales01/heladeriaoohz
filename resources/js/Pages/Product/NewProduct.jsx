@@ -72,6 +72,9 @@ const NewProduct = (params) => {
                 icon: 'warning',
                 timer: 2000,
             })
+            setTimeout(() => {
+                window.location= params.globalVars.myUrl + "category"
+            }, 2000);
         }
     }, [])
 

@@ -157,6 +157,13 @@ class ClientesController extends Controller
         ]);
         $this->ingresar_telefonos($request);
         $this->ActualizarCrearClave($request);
+        //Si el cliente realizo compras, actualizar la cedula
+        $validarComprasRealizadas=DB::table('lista_compras')->where('cliente', '=', $request->cedulaAnterior)->first();
+        if($validarComprasRealizadas!=null){
+            DB::table('lista_compras')->where('cliente', '=', $request->cedulaAnterior)->update([
+                'cliente'=>$request->cedula
+            ]);
+        }
         return Redirect::route('customer.editar', [$request->cedula, 'Cliente actualizado!']);
     }
 

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CateIngresosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ClientesImcompletosController;
+use App\Http\Controllers\IngresosController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SessionController;
@@ -23,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/product/actualizar/{id}', [ProductController::class, 'actualizar'])->name('product.actualizar');
     Route::resource('/shopping', ShoppingController::class);
     Route::get('/shopping/shoppingChangeState/{state}/{value}', [ShoppingController::class, 'shoppingChangeState']);
-    Route::get('/shopping/shoppingproducts/{id}/{n}', [ShoppingController::class, 'getProductosComprados']);
+    Route::get('/shopping/shoppingproducts/{id}', [ShoppingController::class, 'getProductosComprados']);
     Route::post('/shopping/save', [ShoppingController::class, 'save']);
     Route::post('/shopping/actualizar', [ShoppingController::class, 'actualizar']);
     Route::resource('/category', CategoryController::class);
@@ -33,6 +35,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/customer/list/{state?}', [ClientesController::class, 'listar'])->name('customer.list');
     Route::get('/customer/amend/{id}/{state?}', [ClientesController::class, 'editar'])->name('customer.editar');
     Route::resource('/customer', ClientesController::class);
+    Route::resource('/income', IngresosController::class);
+    Route::get('/income/list/{state?}', [IngresosController::class, 'listar'])->name('income.list');
+    Route::get('/income/list/bydate/{finicial}/{ffinal}/{category?}', [IngresosController::class, 'listByDate']);
+    Route::resource('/cateIncome', CateIngresosController::class);
    
 });
 

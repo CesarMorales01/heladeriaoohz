@@ -11,16 +11,16 @@ const TablaClientes = (params) => {
     }
 
     return (
-        <div className='table-responsive'>
-            <table className="table table-striped">
-                <thead>
+        <div style={{ marginTop: '0.5em' }} className='table-responsive'>
+            <table className="table table-striped roundedTable">
+                <thead className='navBarFondo align-middle'>
                     <tr>
-                        <th scope="col"></th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Apellidos</th>
-                        <th scope="col">Cedula</th>
-                        <th scope="col">Direccion</th>
-                        <th scope="col">Telefonos</th>
+                        <th style={{ textAlign: 'center' }} scope="col"></th>
+                        <th style={{ textAlign: 'center' }} scope="col">Nombre</th>
+                        <th style={{ textAlign: 'center' }} scope="col">Apellidos</th>
+                        <th style={{ textAlign: 'center' }} scope="col">Cedula</th>
+                        <th style={{ textAlign: 'center' }} scope="col">Direccion</th>
+                        <th style={{ textAlign: 'center' }} scope="col">Telefonos</th>
 
                     </tr>
                 </thead>

@@ -383,7 +383,7 @@ const NewClient = (params) => {
                                 <input name='telefonos[]' value={newDatosPersonales.telefonos} type='hidden' id='inputTelefonos' />
                                 {newDatosPersonales.telefonos.map((item, index) => {
                                     return (
-                                        <div key={index} style={{ margin: '1em' }} className="col-lg-2 col-md-2 col-sm-4 col-6 border">
+                                        <div key={index} style={{ margin: '1em' }} className="col-lg-3 col-md-3 col-sm-4 col-4 border">
                                             <p>{item}</p>
                                             <button className='rounded-circle' type="button" onClick={() => borrarTelefono(item)} style={{ backgroundColor: 'orange' }}>
                                                 <svg style={{ padding: '0.2em' }} xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">

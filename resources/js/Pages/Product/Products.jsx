@@ -37,8 +37,18 @@ const Products = (params) => {
         const buscar = e.target.value.toLowerCase()
         let newArray = []
         for (let i = 0; i < productos.length; i++) {
-            if (productos[i].nombre.toLowerCase().includes(buscar) || productos[i].descripcion.toLowerCase().includes(buscar)) {
-                newArray.push(productos[i])
+            let producto=null
+            if (productos[i].nombre.toLowerCase().includes(buscar)) {
+                producto=productos[i]
+            }else{
+                if(productos[i].descripcion!=null){
+                    if(productos[i].descripcion.toLowerCase().includes(buscar)){
+                        producto=productos[i]
+                    }
+                }
+            }
+            if(producto!=null){
+                newArray.push(producto)
             }
         }
         if (newArray.length == productos.length) {
@@ -79,6 +89,14 @@ const Products = (params) => {
         window.location = params.globalVars.myUrl + "product/create"
     }
 
+    function getSize(){
+        let size=40
+        if(window.innerWidth<400){
+            size=31
+        }
+        return size
+    }
+
     return (
         <AuthenticatedLayout user={params.auth} info={params.info} url={params.globalVars.urlRoot} urlImagenes={params.globalVars.urlImagenes}>
             <Head title="Productos" />
@@ -104,7 +122,7 @@ const Products = (params) => {
                     <div className="col-12">
                         <form>
                             <div className="flex items-center py-3">
-                                <input size="44" id='inputBuscar' onClick={buscarInAllProducts} onChange={cambioNombre} className="rounded py-2" type="text" placeholder="Buscar producto..." aria-label="Full name" />
+                                <input style={{ marginLeft: '0.8em' }} size={window.innerWidth<400 ? '31' : '40'} id='inputBuscar' onClick={buscarInAllProducts} onChange={cambioNombre} className="rounded" type="text" placeholder="Buscar producto..." aria-label="Full name" />
                                 <button onClick={borrarInput} className="flex-shrink-0 border-transparent border-4 text-teal-500 hover:text-teal-800 text-sm py-1 px-2 rounded" type="button">
                                     <svg style={{ padding: '0.2em', backgroundColor: 'gray', cursor: 'pointer' }} xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="rounded bi bi-x" viewBox="0 0 16 16">
                                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />

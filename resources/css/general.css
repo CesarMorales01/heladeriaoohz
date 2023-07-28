@@ -54,3 +54,8 @@
  .tamañoLetraNav{
     font-size: 1.1em
  }
+ .roundedTable{
+    border-collapse:separate;
+    border:solid black 1px;
+    border-radius:6px;
+ }
