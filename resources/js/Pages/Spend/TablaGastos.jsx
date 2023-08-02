@@ -2,12 +2,12 @@ import React from 'react'
 import GlobalFunctions from '../services/GlobalFunctions'
 import Swal from 'sweetalert2'
 
-const TablaIngresos = (params) => {
+const TablaGastos = (params) => {
     const glob = new GlobalFunctions()
 
     function confirmarBorrar(item) {
         Swal.fire({
-            title: '¿Eliminar ingreso por ' + item.categoria + ' de $' + glob.formatNumber(item.valor) + ' ?',
+            title: '¿Eliminar gasto por ' + item.categoria + ' de $' + glob.formatNumber(item.valor) + ' ?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -47,7 +47,7 @@ const TablaIngresos = (params) => {
                                 <td>$ {glob.formatNumber(item.valor)}</td>
                                 <td>{item.comentario}</td>
                                 <th style={{ textAlign: 'center' }}>
-                                    <form method="get" id={"formEliminar"+item.id} action={route('income.show', item.id)} >
+                                    <form method="get" id={"formEliminar"+item.id} action={route('spend.show', item.id)} >
                                     </form>
                                     <button id={'btnEliminarIngreso' + item.id} onClick={() => confirmarBorrar(item)} className='border border-dark rounded cursorPointer' style={{ padding: '0.2em', backgroundColor: 'red', display: item.precio === 0 ? 'none' : 'inline' }}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
@@ -68,4 +68,4 @@ const TablaIngresos = (params) => {
     )
 }
 
-export default TablaIngresos
+export default TablaGastos

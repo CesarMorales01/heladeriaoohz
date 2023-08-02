@@ -27,36 +27,44 @@ const NewProduct = (params) => {
     const [displayBtnBorrar, setDisplayBtnBorrar] = useState('none')
 
     useEffect(() => {
-        if (producto.imagen == '') {
-            if (params.producto.nombre == '') {
-                setProducto({
-                    id: '',
-                    referencia: '',
-                    categoria: '',
-                    nombre: '',
-                    descripcion: '',
-                    cantidad: 0,
-                    costo: 0,
-                    valor: '',
-                    imagen: 'noPreview.jpg'
-                })
+        if (params.producto.id == '') {
+            setProducto({
+                id: '',
+                referencia: '',
+                categoria: '',
+                nombre: '',
+                descripcion: '',
+                cantidad: 0,
+                costo: 0,
+                valor: '',
+                imagen: 'noPreview.jpg'
+            })
+        } else {
+            setDisplayBtnBorrar('inline')
+            // Se recibe un array en params.product, el id se registra en fk_producto
+            let img = ''
+            let id=''
+            if (!params.producto[0].nombre_imagen) {
+                img = 'noPreview.jpg'
+                id= params.producto[0].id
             } else {
-                setDisplayBtnBorrar('inline')
-                // Se recibe un array en params.product, el id se registra en fk_producto
-                setProducto({
-                    id: params.producto[0].fk_producto,
-                    referencia: params.producto[0].referencia,
-                    categoria: params.producto[0].categoria,
-                    nombre: params.producto[0].nombre,
-                    descripcion: params.producto[0].descripcion,
-                    cantidad: params.producto[0].cantidad,
-                    costo: params.producto[0].costo,
-                    valor: params.producto[0].valor,
-                    imagen: params.producto[0].nombre_imagen
-                })
+                img = params.producto[0].nombre_imagen
+                id=params.producto[0].fk_producto
             }
+            setProducto({
+                id: id,
+                referencia: params.producto[0].referencia,
+                categoria: params.producto[0].categoria,
+                nombre: params.producto[0].nombre,
+                descripcion: params.producto[0].descripcion,
+                cantidad: params.producto[0].cantidad,
+                costo: params.producto[0].costo,
+                valor: params.producto[0].valor,
+                imagen: img
+            })
         }
-    })
+
+    }, [])
 
     useEffect(() => {
         if (params.estado != null) {
@@ -73,7 +81,7 @@ const NewProduct = (params) => {
                 timer: 2000,
             })
             setTimeout(() => {
-                window.location= params.globalVars.myUrl + "category"
+                window.location = params.globalVars.myUrl + "category"
             }, 2000);
         }
     }, [])
@@ -134,10 +142,8 @@ const NewProduct = (params) => {
     function validarFuncion() {
         if (validarCampos()) {
             if (producto.id == '') {
-                if (validarContenidoFile()) {
-                    document.getElementById('formCrear').submit()
-                    loadingOn()
-                }
+                document.getElementById('formCrear').submit()
+                loadingOn()
             } else {
                 updateProduct()
                 loadingOn()
@@ -274,7 +280,7 @@ const NewProduct = (params) => {
                         <div style={{ marginTop: '1.5em' }} className="col-lg-6 col-md-6 col-sm-12 col-12" >
                             <input name='imagen' data-toggle="tooltip" id='fileImagen' title="Ingresa imagenes con fondo blanco, aprox 500x500 mp." type="file" disabled={producto.id == '' ? false : true} onChange={mostrarImagen} />
                             <br /><br />
-                            <img onLoad={spinOff} className='border' id="img" width="140px" height="150px" src={params.producto.imagen == '' ? params.globalVars.myUrl + "Images/Config/" + producto.imagen : params.globalVars.urlImagenes + producto.imagen} />
+                            <img onLoad={spinOff} className='border' id="img" width="140px" height="150px" src={producto.imagen == 'noPreview.jpg' ? params.globalVars.myUrl + "Images/Config/" + producto.imagen : params.globalVars.urlImagenes + producto.imagen} />
                             <span id='spanvalidandoNombreImagen' style={{ display: '' }} className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             <br />
                             {producto.id == '' ? '' : producto.imagen}

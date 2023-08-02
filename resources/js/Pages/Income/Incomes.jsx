@@ -238,7 +238,7 @@ const Gastos = (params) => {
                     </table>
                 </div>
             </div>
-            <h1 style={{ marginTop: '0.5em', fontSize: '1.5em' }} id="titulo" className="text-center">Lista de otros ingresos</h1>
+            <h1 style={{ fontSize: '1.5em' }} id="titulo" className="text-center">Lista de otros ingresos</h1>
             <div className='container'>
                 <TablaIngresos datos={listaIngresos}></TablaIngresos>
             </div>

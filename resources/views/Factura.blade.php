@@ -48,20 +48,41 @@
         <table class="table bordeRedondo">
             <thead>
                 <th>Cliente</th>
-                <td colspan="5"> {{ $data[0]->cliente->nombre }}</td>
+                <td colspan="5">
+                    @if ($data[0]->cliente)
+                        {{ $data[0]->cliente->nombre }}
+                    @endif
+
+                </td>
             </thead>
             <tbody>
                 <tr>
                     <th>Dirección</th>
-                    <td colspan="3">{{ $data[0]->cliente->direccion }}</td>
+                    <td colspan="3">
+                        @if ($data[0]->cliente)
+                            {{ $data[0]->cliente->direccion }}
+                        @endif
+                    </td>
                     <th>Ciudad</th>
-                    <td>{{ $data[0]->cliente->nombreCiudad }}</td>
+                    <td>
+                        @if ($data[0]->cliente)
+                            {{ $data[0]->cliente->nombreCiudad }}
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th>NIT</th>
-                    <td>{{ $data[0]->cliente->cedula }}</td>
+                    <td>
+                        @if ($data[0]->cliente)
+                            {{ $data[0]->cliente->cedula }}
+                        @endif
+                    </td>
                     <th>Télefono</th>
-                    <td>{{ $data[0]->cliente->telefono }}</td>
+                    <td>
+                        @if ($data[0]->cliente)
+                            {{ $data[0]->cliente->telefono }}
+                        @endif
+                    </td>
                     <th>Fecha</th>
                     <td>{{ $data[0]->fecha }}</td>
                 </tr>
@@ -87,7 +108,7 @@
             </tbody>
         </table>
         <table style="text-align:center;" class="table">
-            <tr >
+            <tr>
                 <th style="color: white">------------</th>
                 <th>Total a pagar</th>
                 <td>$ {{ number_format($data[0]->totalFactura, 0, ',', '.') }}</td>

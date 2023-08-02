@@ -258,7 +258,14 @@ const NewClient = (params) => {
                             validado++
                         }
                         if (validado == 2) {
-                            updateUsuario()
+                            // Leer desde el input porque al borrar onchange no registra el cambio...
+                            let ced=document.getElementById('inputCedula').value
+                            if(ced==''){
+                                alertDatosFaltantes('Ingresa número de cédula!')
+                                loadingOff()
+                            }else{
+                                updateUsuario()
+                            }   
                         } else {
                             loadingOff()
                             alertDatosFaltantes('Ya existe un usuario con el número de identificación o el email ingresado!')
@@ -267,9 +274,6 @@ const NewClient = (params) => {
                 })
         }
     }
-
-
-
 
     function updateUsuario() {
         const form = document.getElementById("formCrear")

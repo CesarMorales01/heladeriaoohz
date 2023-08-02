@@ -15,10 +15,14 @@ const MasImagenes = (params) => {
         nombre:''
     })
     const [selectedFile, setSelectedFile] = useState(null);
-    const [fileId, setFileId] = useState(Math.random());
+    const [fileId, setFileId] = useState(Math.random())
+    const [cargar, setCargar] = useState(true)
 
-    checkId()
-
+    
+    useEffect(() => {
+        checkId()
+    })
+    
     function checkId() {
         if (id != params.id) {
             setId(params.id)
@@ -26,7 +30,7 @@ const MasImagenes = (params) => {
     }
 
     useEffect(() => {
-        if (imagenes.length == 0 && id != '') {
+        if (cargar) {
             fetchImagenes()
         }
     }, [imagenes, id])
@@ -37,6 +41,7 @@ const MasImagenes = (params) => {
             .then((response) => {
                 return response.json()
             }).then((json) => {
+                setCargar(false)
                 setImagenes(json)
             })
     }
@@ -62,6 +67,7 @@ const MasImagenes = (params) => {
     function reiniciarImagenes() {
         const array = []
         setImagenes(array)
+        setCargar(true)
     }
 
     function mostrarImagenImgs(event) {
@@ -117,6 +123,7 @@ const MasImagenes = (params) => {
                 const response = await axios.post(url, formData, {
                     headers: { "Content-Type": "multipart/form-data" }
                 }).then((res) => {
+                    console.log(res.data)
                     if (res.data=='ok') {
                         document.getElementById(fileId).value=""
                         setFileId(Math.random())

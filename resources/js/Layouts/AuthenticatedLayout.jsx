@@ -27,6 +27,12 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                 <NavLink   href={route('income.list', 'nothing')} active={route().current('income.list')}>
                                    Ingresos
                                 </NavLink>
+                                <NavLink   href={route('spend.list', 'nothing')} active={route().current('spend.list')}>
+                                   Egresos
+                                </NavLink>
+                                <NavLink   href={route('report.list', 'nothing')} active={route().current('report.list')}>
+                                   Informes
+                                </NavLink>
 
                             </div>
                         </div>
@@ -113,6 +119,16 @@ export default function Authenticated({ user, header, children, globalVars }) {
                     <div className="pt-2 pb-3 space-y-1">
                         <NavLink href={route('income.list', 'nothing')} active={route().current('income.list')}>
                             Ingresos
+                        </NavLink>
+                    </div>
+                    <div className="pt-2 pb-3 space-y-1">
+                        <NavLink href={route('spend.list', 'nothing')} active={route().current('spend.list')}>
+                            Egresos
+                        </NavLink>
+                    </div>
+                    <div className="pt-2 pb-3 space-y-1">
+                        <NavLink href={route('report.list', 'nothing')} active={route().current('report.list')}>
+                            Informes
                         </NavLink>
                     </div>
 

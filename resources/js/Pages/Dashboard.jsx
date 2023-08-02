@@ -5,6 +5,8 @@ import logoProducts from '../../../public/Images/Config/products.jpg'
 import logoRegistradora from '../../../public/Images/Config/registradora.jpg'
 import logoClientes from '../../../public/Images/Config/clientes.webp'
 import logoIngresos from '../../../public/Images/Config/ingresos.jpg'
+import logoEgresos from '../../../public/Images/Config/spend.jpg'
+import logoInformes from '../../../public/Images/Config/reports.webp'
 import Progressbar from './UIGeneral/ProgressBar'
 import React, { useState, useEffect } from 'react'
 
@@ -32,8 +34,14 @@ export default function Dashboard(params) {
         setProgressBar(true)
     }
 
-    function imprimir() {
-        window.print();
+    function goEgresos() {
+        window.location = params.globalVars.myUrl + "spend/list/nothing"
+        setProgressBar(true)
+    }
+
+    function goInformes() {
+        window.location = params.globalVars.myUrl + "report/list/nothing"
+        setProgressBar(true)
     }
 
 
@@ -46,8 +54,8 @@ export default function Dashboard(params) {
                 <div style={{ display: progressBar ? '' : 'none' }}>
                     <Progressbar progress={progressBar}></Progressbar>
                 </div>
-                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div style={{ textAlign: 'center', marginBottom: '1em' }} className="container">
+                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg py-3">
+                    <div style={{ textAlign: 'center', marginBottom: '0em' }} className="container">
                         <div className="row justify-content-center" >
                             <div style={{ marginBottom: '1em' }} className="col-lg-4 col-md-4 col-sm-6 col-6"  >
                                 <div onClick={goProducts} className="card border border-primary card-flyer pointer">
@@ -65,7 +73,7 @@ export default function Dashboard(params) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                            <div style={{ marginBottom: '1em' }} className="col-lg-4 col-md-4 col-sm-6 col-6"  >
                                 <div onClick={goClientes} className="card border border-primary card-flyer pointer">
                                     <img style={{ width: '10em', height: '10em', marginTop: '1em' }} src={logoClientes} className="card-img-top img-fluid centerImg" alt="" />
                                     <div style={{ textAlign: 'center' }} className="card-body">
@@ -73,7 +81,7 @@ export default function Dashboard(params) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                            <div style={{ marginBottom: '1em' }} className="col-lg-4 col-md-4 col-sm-6 col-6"  >
                                 <div onClick={goIngresos} className="card border border-primary card-flyer pointer">
                                     <img style={{ width: '10em', height: '10em', marginTop: '1em' }} src={logoIngresos} className="card-img-top img-fluid centerImg" alt="" />
                                     <div style={{ textAlign: 'center' }} className="card-body">
@@ -81,9 +89,24 @@ export default function Dashboard(params) {
                                     </div>
                                 </div>
                             </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                                <div onClick={goEgresos} className="card border border-primary card-flyer pointer">
+                                    <img style={{ width: '12em', height: '10em', marginTop: '1em' }} src={logoEgresos} className="card-img-top img-fluid centerImg" alt="" />
+                                    <div style={{ textAlign: 'center' }} className="card-body">
+                                        <h2 className="card-title superTitulo">Egresos</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                                <div onClick={goInformes} className="card border border-primary card-flyer pointer">
+                                    <img style={{ width: '12em', height: '10em', marginTop: '1em' }} src={logoInformes} className="card-img-top img-fluid centerImg" alt="" />
+                                    <div style={{ textAlign: 'center' }} className="card-body">
+                                        <h2 className="card-title superTitulo">Informes</h2>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <input style={{ display: 'none' }} type="button" value="Imprimir" onClick={imprimir} />
                 </div>
             </div>
         </AuthenticatedLayout>

@@ -193,30 +193,42 @@ class ShoppingController extends Controller
         //Ver venta en pdf con opcion para imprimir...
         $datosCompra = DB::table('lista_compras')->where('id', '=', $id)->first();
         $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $id)->get();
-        $totalFactura=0;
-        foreach($listaProductos as $item){
-            $subtotal=$item->precio*$item->cantidad;
-            $item->subtotal=$subtotal;
-            $totalFactura=$totalFactura+$subtotal;
+        $totalFactura = 0;
+        foreach ($listaProductos as $item) {
+            $subtotal = $item->precio * $item->cantidad;
+            $item->subtotal = $subtotal;
+            $totalFactura = $totalFactura + $subtotal;
         }
-        $datosCompra->totalFactura=$totalFactura;
+        $datosCompra->totalFactura = $totalFactura;
         $datosCompra->listaProductos = $listaProductos;
         if ($datosCompra->cliente != '') {
             $cliente = DB::table('clientes')->where('cedula', '=', $datosCompra->cliente)->first();
-            $ciudad=DB::table('municipios')->where('id', '=', $cliente->ciudad)->first();
-            $cliente->nombreCiudad=$ciudad->nombre;
-            $telefono=DB::table('telefonos_clientes')->where('cedula', '=', $cliente->cedula)->first();
-            $cliente->telefono=$telefono->telefono;
+            $ciudad = DB::table('municipios')->where('id', '=', $cliente->ciudad)->first();
+            if($ciudad==null){
+                $ciudad='';
+                $cliente->nombreCiudad = $ciudad;
+            }else{
+                $cliente->nombreCiudad = $ciudad->nombre;
+            }
+            $telefono = DB::table('telefonos_clientes')->where('cedula', '=', $cliente->cedula)->first();
+            if($telefono==null){
+                $telefono='';
+                $cliente->telefono = $telefono;
+            }else{
+                $cliente->telefono = $telefono->telefono;
+            }
+            
             $datosCompra->cliente = $cliente;
-            $data[] = $datosCompra;
-            $pdf = App::make('dompdf.wrapper');
-            $pdf = Pdf::loadView('Factura', compact('data'));
-            return $pdf->stream();
         }
+        $data[] = $datosCompra;
+        $pdf = App::make('dompdf.wrapper');
+        $pdf = Pdf::loadView('Factura', compact('data'));
+        return $pdf->stream('Factura-'.$datosCompra->id);
     }
 
-    public function setSubtotal($item){
-        return $item->cantidad+1;
+    public function setSubtotal($item)
+    {
+        return $item->cantidad + 1;
     }
 
     public function edit(string $id)

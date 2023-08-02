@@ -47,7 +47,7 @@ class IngresosController extends Controller
         if ($state != 'nothing') {
             $estado = $state;
         }
-        return Inertia::render('Income/Incomes', compact('auth', 'globalVars', 'ventas', 'categorias', 'token', 'estado', 'ventas', 'ingresos', 'listaIngresos'));
+        return Inertia::render('Income/Incomes', compact('auth', 'globalVars', 'ventas', 'categorias', 'token', 'estado', 'ingresos', 'listaIngresos'));
     }
 
     public function listByDate($finicial, $ffinal, $category='')
@@ -67,11 +67,7 @@ class IngresosController extends Controller
             ->orderBy('ingresos.id', 'desc')->get();
             $ingresos=DB::table('ingresos')->where('category_id', '=', $category)->select(DB::raw('SUM(valor) AS suma'))->whereBetween('fecha', [$finicial, $ffinal])->get();
         }
-
-        
         $ingresos=$ingresos[0]->suma;
-        
-
         $objeto=new stdClass();
         $objeto->ventas=$ventas;
         $objeto->ingresos=$ingresos;

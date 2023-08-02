@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\CateGastosController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CateIngresosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ClientesImcompletosController;
+use App\Http\Controllers\GastosController;
+use App\Http\Controllers\InformesController;
 use App\Http\Controllers\IngresosController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -39,7 +42,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/income/list/{state?}', [IngresosController::class, 'listar'])->name('income.list');
     Route::get('/income/list/bydate/{finicial}/{ffinal}/{category?}', [IngresosController::class, 'listByDate']);
     Route::resource('/cateIncome', CateIngresosController::class);
-   
+    Route::resource('/spend', GastosController::class);
+    Route::get('/spend/list/{state?}', [GastosController::class, 'listar'])->name('spend.list');
+    Route::resource('/cateSpend', CateGastosController::class);
+    Route::get('/spend/list/bydate/{finicial}/{ffinal}/{category?}', [GastosController::class, 'listByDate']);
+    Route::resource('/report', InformesController::class);
+    Route::get('/report/list/{state?}', [InformesController::class, 'listar'])->name('report.list');
+    Route::get('/report/list/bydate/{finicial}/{ffinal}', [InformesController::class, 'listByDate']);
+    Route::get('/report/top/cantidad/{finicial}/{ffinal}', [InformesController::class, 'topVentasCantidad']);
+    Route::get('/report/top/valores/{finicial}/{ffinal}', [InformesController::class, 'topVentasValores']);
+    Route::get('/report/topclientes/valores/{finicial}/{ffinal}', [InformesController::class, 'topClientesValores']);
+    Route::get('/report/topclientes/cantidad/{finicial}/{ffinal}', [InformesController::class, 'topClientesCantidad']);
 });
 
 require __DIR__.'/auth.php';
