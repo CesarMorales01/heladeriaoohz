@@ -2,12 +2,12 @@ import React from 'react'
 import GlobalFunctions from '../services/GlobalFunctions'
 import Swal from 'sweetalert2'
 
-const TablaGastos = (params) => {
+const TablaProveedores = (params) => {
     const glob = new GlobalFunctions()
 
     function confirmarBorrar(item) {
         Swal.fire({
-            title: '¿Eliminar gasto por ' + item.categoria + ' de $' + glob.formatNumber(item.valor) + ' ?',
+            title: '¿Eliminar proveedor ' + item.nombre + ' de $' + glob.formatNumber(item.valor) + ' ?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -32,25 +32,27 @@ const TablaGastos = (params) => {
                 <thead className='navBarFondo align-middle'>
                     <tr>
                         <th style={{ textAlign: 'center' }} scope="col">Fecha</th>
+                        <th style={{ textAlign: 'center' }} scope="col">Nombre</th>
                         <th style={{ textAlign: 'center' }} scope="col">Categoria</th>
                         <th style={{ textAlign: 'center' }} scope="col">Valor</th>
-                        <th style={{ textAlign: 'center' }} scope="col">Comentarios</th>
+                        <th style={{ textAlign: 'center' }} scope="col">Descripción</th>
                         <th style={{ textAlign: 'center' }} scope="col">Eliminar</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {params.noDatos ?
+                    {params.noProviders ?
                         <tr style={{ marginTop: '1.5em' }} className='container'><td colSpan='6'>No se han encontrado resultados....</td></tr>
                         :
                         params.datos.map((item, index) => {
                             return (
                                 <tr key={index}>
                                     <th>{item.fecha}</th>
+                                    <td>{item.nombre}</td>
                                     <td>{item.categoria}</td>
                                     <td>$ {glob.formatNumber(item.valor)}</td>
-                                    <td>{item.comentario}</td>
+                                    <td>{item.descripcion != null ? item.descripcion.substring(0, 30) : ''}</td>
                                     <th style={{ textAlign: 'center' }}>
-                                        <form method="get" id={"formEliminar" + item.id} action={route('spend.show', item.id)} >
+                                        <form method="get" id={"formEliminar" + item.id} action={route('provider.show', item.id)} >
                                         </form>
                                         <button id={'btnEliminarIngreso' + item.id} onClick={() => confirmarBorrar(item)} className='border border-dark rounded cursorPointer' style={{ padding: '0.2em', backgroundColor: 'red', display: item.precio === 0 ? 'none' : 'inline' }}>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
@@ -72,4 +74,4 @@ const TablaGastos = (params) => {
     )
 }
 
-export default TablaGastos
+export default TablaProveedores

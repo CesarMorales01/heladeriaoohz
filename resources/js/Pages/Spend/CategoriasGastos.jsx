@@ -67,16 +67,13 @@ const CategoriasGastos = (params) => {
                         <h1 style={{ fontSize: '1.5em', marginLeft: '0.5em' }} className="modal-title" id="exampleModalLabel">Categorias gastos</h1>
                     </div>
                     <div className='container' style={{ margin: '0.2em' }}>
+                        <div style={{ marginTop: '1em', marginBottom: '1em' }} className="container" >
+                            <PrimaryButton type="button" id='btnNuevaCategoria' data-toggle="modal" data-target="#dialogoNuevaCategoriaIngreso" className='btn btn-success btn-sm'>
+                                Nueva categoria
+                            </PrimaryButton>
+                            <NuevaCategoriaGasto cerrar={cerrarDialogoNuevaCate} token={params.token}></NuevaCategoriaGasto>
+                        </div>
                         <div className='container table-responsive'>
-                            <div style={{ marginTop: '0.2em' }} >
-                                <div className="container" >
-                                    <PrimaryButton type="button" id='btnNuevaCategoria' data-toggle="modal" data-target="#dialogoNuevaCategoriaIngreso" className='btn btn-success btn-sm'>
-                                        Nueva categoria
-                                    </PrimaryButton>
-                                    <NuevaCategoriaGasto cerrar={cerrarDialogoNuevaCate} token={params.token}></NuevaCategoriaGasto>
-
-                                </div>
-                            </div>
                             <table className="table table-striped">
                                 <thead>
                                     <tr>
@@ -111,7 +108,7 @@ const CategoriasGastos = (params) => {
                         <div className="col-3">
                         </div>
                         <div className="col-3">
-                            <SecondaryButton type="button"  data-dismiss="modal">Cancelar</SecondaryButton>
+                            <SecondaryButton type="button" data-dismiss="modal">Cancelar</SecondaryButton>
                         </div>
                     </div>
                     <br />

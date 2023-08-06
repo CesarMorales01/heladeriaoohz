@@ -2,22 +2,26 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import React from 'react'
 import Swal from 'sweetalert2'
-import NuevaCategoriaIngreso from './NuevaCategoriaIngreso';
+import NewCategoryProviders from './NewCategoryProviders';
 
-const CategoriasIngresos = (params) => {
+
+
+const CategoriesProviders = (params) => {
 
     function fetchConfirmarEliminar(id) {
         loadingOn(id)
-        const url = params.globalVars.myUrl + 'cateIncome/' + id + "/edit"
+        const url = params.globalVars.myUrl + 'cateProvider/' + id + "/edit"
+        console.log(url)
         fetch(url)
             .then((response) => {
                 return response.json()
             }).then((json) => {
-                if (json == 'No puedes eliminar esta categoria porque esta ocupada en algunos ingresos!') {
+                console.log(json)
+                if (json == 'No puedes eliminar esta categoria porque esta ocupada en algunos proveedores!') {
                     sweetAlert(json)
                     loadingOff(id)
                 } else {
-                    window.location = params.globalVars.myUrl + 'income/list/Categoria eliminada!'
+                    window.location = params.globalVars.myUrl + 'provider/list/Categoria eliminada!'
                 }
             })
     }
@@ -59,20 +63,18 @@ const CategoriasIngresos = (params) => {
     }
 
     return (
-        <div className="modal fade bd-example-modal-lg" id='dialogoCategorias' tabIndex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div className="modal fade bd-example-modal-lg" id='dialogoCategoriesProviders' tabIndex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
             <div className="modal-dialog modal-lg modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h1 style={{ fontSize: '1.5em', marginLeft: '0.5em' }} className="modal-title" id="exampleModalLabel">Categorias ingresos</h1>
+                        <h1 style={{ fontSize: '1.5em', marginLeft: '0.5em' }} className="modal-title" id="exampleModalLabel">Categorias proveedores</h1>
                     </div>
                     <div className='container' style={{ margin: '0.2em' }}>
-                        <div style={{ marginTop: '1em', marginBottom: '1em' }} >
-                            <div className="container" >
-                                <PrimaryButton type="button" id='btnNuevaCategoria' data-toggle="modal" data-target="#dialogoNuevaCategoriaIngreso" className='btn btn-success btn-sm'>
-                                    Nueva categoria
-                                </PrimaryButton>
-                                <NuevaCategoriaIngreso cerrar={cerrarDialogoNuevaCate} token={params.token} />
-                            </div>
+                        <div style={{ marginTop: '1em', marginBottom: '1em' }} className="container" >
+                            <PrimaryButton type="button" id='btnNuevaCategoria' data-toggle="modal" data-target="#dialogoNuevaCategoriaIngreso" className='btn btn-success btn-sm'>
+                                Nueva categoria
+                            </PrimaryButton>
+                            <NewCategoryProviders cerrar={cerrarDialogoNuevaCate} token={params.token}></NewCategoryProviders>
                         </div>
                         <div className='container table-responsive'>
                             <table className="table table-striped">
@@ -119,4 +121,4 @@ const CategoriasIngresos = (params) => {
     )
 }
 
-export default CategoriasIngresos
+export default CategoriesProviders

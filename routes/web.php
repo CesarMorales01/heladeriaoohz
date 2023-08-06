@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CateGastosController;
+use App\Http\Controllers\CategoriesProvidersController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CateIngresosController;
 use App\Http\Controllers\ClientesController;
@@ -10,11 +11,10 @@ use App\Http\Controllers\InformesController;
 use App\Http\Controllers\IngresosController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\ShoppingController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [SessionController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -53,6 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/report/top/valores/{finicial}/{ffinal}', [InformesController::class, 'topVentasValores']);
     Route::get('/report/topclientes/valores/{finicial}/{ffinal}', [InformesController::class, 'topClientesValores']);
     Route::get('/report/topclientes/cantidad/{finicial}/{ffinal}', [InformesController::class, 'topClientesCantidad']);
+    Route::resource('/provider', ProveedoresController::class);
+    Route::get('/provider/list/{state?}', [ProveedoresController::class, 'listar'])->name('provider.list');
+    Route::resource('/cateProvider', CategoriesProvidersController::class);
+    Route::get('/provider/list/bydate/{finicial}/{ffinal}/{cate?}', [ProveedoresController::class, 'listByDate']);
 });
 
 require __DIR__.'/auth.php';

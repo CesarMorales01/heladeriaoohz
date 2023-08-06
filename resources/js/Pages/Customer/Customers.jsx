@@ -105,10 +105,11 @@ const Clientes = (params) => {
             user={params.auth} info={params.info} urlImagenes={params.globalVars.urlImagenes}
         >
             <Head title="Clientes" />
+            <div style={{ display: progressBar ? '' : 'none' }}>
+                <Progressbar progress={progressBar}></Progressbar>
+            </div>
             <div style={{ marginTop: '0.2em' }} align="center" className="container">
                 <div align="center" className="row justify-content-center">
-
-
                     <div style={{ marginTop: '0.8em' }} className="row">
                         <div className="col-lg-6 col-md-6 col-sm-6 col-6"  >
                             <div onClick={goNewClient} className="card border border-primary card-flyer pointer">

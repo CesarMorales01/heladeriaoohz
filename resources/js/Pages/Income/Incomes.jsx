@@ -24,6 +24,7 @@ const Gastos = (params) => {
         fechaFinal: ''
     })
     const [filtrarCategoria, setFiltrarCategoria] = useState('')
+    const [noDatos, setNoDatos] = useState(false)
 
     useEffect(() => {
         if (cargar) {
@@ -38,6 +39,14 @@ const Gastos = (params) => {
             sweetAlert(params.estado)
         }
     }, [])
+
+    useEffect(() => {
+        if (listaIngresos.length == 0) {
+          setNoDatos(true)
+        } else {
+          setNoDatos(false)
+        }
+      }, [listaIngresos])
 
     function cargarDatos() {
         const url = params.globalVars.myUrl + 'income/list/bydate/' + fechas.fechaInicio + '/' + fechas.fechaFinal + '/' + filtrarCategoria
@@ -240,7 +249,7 @@ const Gastos = (params) => {
             </div>
             <h1 style={{ fontSize: '1.5em' }} id="titulo" className="text-center">Lista de otros ingresos</h1>
             <div className='container'>
-                <TablaIngresos datos={listaIngresos}></TablaIngresos>
+                <TablaIngresos noDatos={noDatos} datos={listaIngresos}></TablaIngresos>
             </div>
             <button type="button" id='btnDialogoCategorias' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoCategorias"></button>
             <CategoriasIngresos globalVars={params.globalVars} token={params.token} categorias={params.categorias} />

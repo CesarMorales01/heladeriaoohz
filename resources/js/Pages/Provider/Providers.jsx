@@ -8,29 +8,37 @@ import newLogo from '../../../../public/Images/Config/plus.png'
 import listLogo from '../../../../public/Images/Config/list.png'
 import SelectCategorias from '../Income/SelectCategorias';
 import Swal from 'sweetalert2'
-import TablaGastos from './TablaGastos';
-import CategoriasGastos from './CategoriasGastos';
-import NuevoGasto from './NuevoGasto';
+import CategoriesProviders from './CategoriesProviders';
+import NewProvider from './NewProvider';
+import TablaProveedores from './TablaProveedores';
 
-const Gastos = (params) => {
+
+const Providers = (params) => {
 
   const glob = new GlobalFunctions()
-  const [totalGastos, setTotalGastos] = useState(params.gastos)
-  const [listaGastos, setListaGastos] = useState(params.listaGastos)
+  const [totalProveedores, setTotalProveedores] = useState(params.totalProveedores)
+  const [proveedores, setProveedores] = useState(params.proveedores)
   const [cargar, setCargar] = useState(false)
   const [fechas, setFechas] = useState({
     fechaInicio: '',
     fechaFinal: ''
   })
   const [filtrarCategoria, setFiltrarCategoria] = useState('')
-  const [noDatos, setNoDatos] = useState(false)
+  const [noProviders, setNoProviders] = useState(false)
 
   useEffect(() => {
     if (cargar) {
       cargarDatos()
     }
-  }, [listaGastos, fechas, filtrarCategoria])
+  }, [fechas, filtrarCategoria])
 
+  useEffect(() => {
+    if (proveedores.length == 0) {
+      setNoProviders(true)
+    } else {
+      setNoProviders(false)
+    }
+  }, [proveedores])
 
   useEffect(() => {
     cargarFechas()
@@ -39,23 +47,15 @@ const Gastos = (params) => {
     }
   }, [])
 
-  useEffect(() => {
-    if (listaGastos.length == 0) {
-      setNoDatos(true)
-    } else {
-      setNoDatos(false)
-    }
-  }, [listaGastos])
-
   function cargarDatos() {
-    const url = params.globalVars.myUrl + 'spend/list/bydate/' + fechas.fechaInicio + '/' + fechas.fechaFinal + '/' + filtrarCategoria
+    const url = params.globalVars.myUrl + 'provider/list/bydate/' + fechas.fechaInicio + '/' + fechas.fechaFinal + '/' + filtrarCategoria
     fetch(url)
       .then((response) => {
         return response.json()
       }).then((json) => {
         setCargar(false)
-        setTotalGastos(json.gastos)
-        setListaGastos(json.listaGastos)
+        setTotalProveedores(json.totalProveedores)
+        setProveedores(json.proveedores)
       })
   }
 
@@ -78,12 +78,12 @@ const Gastos = (params) => {
     })
   }
 
-  function newSpend() {
-    document.getElementById('btnDialogoNuevoGasto').click()
+  function newProvider() {
+    document.getElementById('btnDialogoNewProvider').click()
   }
 
   function goCategories() {
-    document.getElementById('btnDialogoCategorias').click()
+    document.getElementById('btnDialogoCategoriesProviders').click()
   }
 
   function cambioFechaInicio(e) {
@@ -169,16 +169,16 @@ const Gastos = (params) => {
       <div className='container'>
         <div style={{ marginTop: '0.2em' }} align="center" className="row justify-content-center">
           <div style={{ marginTop: '0.8em' }} className="row">
-            <div onClick={newSpend} className="col-lg-6 col-md-6 col-sm-6 col-6"  >
+            <div onClick={newProvider} className="col-lg-6 col-md-6 col-sm-6 col-6"  >
               <div className="card border border-primary card-flyer pointer">
                 <img style={{ width: '8em', height: '4em', marginTop: '1em' }} src={newLogo} className="card-img-top img-fluid centerImg" alt="" />
-                <h2 style={{ marginTop: '0.2em' }} className="card-title titulo">Nuevo gasto</h2>
+                <h2 style={{ marginTop: '0.2em' }} className="card-title titulo">Nuevo proveedor</h2>
               </div>
             </div>
             <div onClick={goCategories} className="col-lg-6 col-md-6 col-sm-6 col-6"  >
               <div className="card border border-primary card-flyer pointer">
                 <img style={{ width: '3em', height: '4em', marginTop: '1em' }} src={listLogo} className="card-img-top img-fluid centerImg" alt="" />
-                <h2 style={{ marginTop: '0.2em', fontSize: '17px', color: 'black', fontWeight: 'bold' }} className="card-title">Categorias gastos</h2>
+                <h2 style={{ marginTop: '0.2em', fontSize: '17px', color: 'black', fontWeight: 'bold' }} className="card-title">Categorias proveedores</h2>
               </div>
             </div>
           </div>
@@ -188,7 +188,7 @@ const Gastos = (params) => {
         </div>
         <div style={{ marginTop: '0.5em' }} className="row justify-content-center">
           <div style={{ textAlign: 'center' }} className='row col-lg-6 col-md-6 col-sm-12 col-12'>
-            <label className='titulo' style={{ textAlign: 'center', marginBottom: '0.2em' }}><strong>Gastos entre</strong></label>
+            <label className='titulo' style={{ textAlign: 'center', marginBottom: '0.2em' }}><strong>Proveedores entre</strong></label>
             <div className="col-2">
               <button onClick={mesAnterior} className='border border-dark rounded cursorPointer' style={{ marginTop: '0.2em', marginLeft: '0.2em', padding: '0.5em', backgroundColor: '#00722e' }} id="btn_buscar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle" viewBox="0 0 16 16">
@@ -230,23 +230,24 @@ const Gastos = (params) => {
           <table className="table">
             <thead>
               <tr>
-                <th scope="col">Total gastos</th>
-                <th scope="col">$ {glob.formatNumber(totalGastos)}</th>
+                <th scope="col">Total proveedores</th>
+                <th scope="col">$ {glob.formatNumber(totalProveedores)}</th>
               </tr>
             </thead>
           </table>
         </div>
       </div>
-      <h1 style={{ fontSize: '1.5em' }} id="titulo" className="text-center">Lista de gastos</h1>
+      <h1 style={{ fontSize: '1.5em' }} id="titulo" className="text-center">Lista de proveedores</h1>
       <div className='container'>
-        <TablaGastos noDatos={noDatos} datos={listaGastos}></TablaGastos>
+        <TablaProveedores noProviders={noProviders} datos={proveedores}></TablaProveedores>
       </div>
-      <button type="button" id='btnDialogoCategorias' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoCategorias"></button>
-      <CategoriasGastos globalVars={params.globalVars} token={params.token} categorias={params.categorias} />
-      <button type="button" id='btnDialogoNuevoGasto' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoNuevoGasto"></button>
-      <NuevoGasto token={params.token} categorias={params.categorias}></NuevoGasto>
+      <button type="button" id='btnDialogoCategoriesProviders' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoCategoriesProviders"></button>
+      <CategoriesProviders globalVars={params.globalVars} token={params.token} categorias={params.categorias}></CategoriesProviders>
+      <button type="button" id='btnDialogoNewProvider' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoNewProvider"></button>
+      <NewProvider token={params.token} categorias={params.categorias}></NewProvider>
+
     </AuthenticatedLayout>
   )
 }
 
-export default Gastos
+export default Providers

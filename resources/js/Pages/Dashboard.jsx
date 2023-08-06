@@ -7,6 +7,7 @@ import logoClientes from '../../../public/Images/Config/clientes.webp'
 import logoIngresos from '../../../public/Images/Config/ingresos.jpg'
 import logoEgresos from '../../../public/Images/Config/spend.jpg'
 import logoInformes from '../../../public/Images/Config/reports.webp'
+import logoProviders from '../../../public/Images/Config/provider.jpg'
 import Progressbar from './UIGeneral/ProgressBar'
 import React, { useState, useEffect } from 'react'
 
@@ -41,6 +42,11 @@ export default function Dashboard(params) {
 
     function goInformes() {
         window.location = params.globalVars.myUrl + "report/list/nothing"
+        setProgressBar(true)
+    }
+
+    function goProviders() {
+        window.location = params.globalVars.myUrl + "provider/list/nothing"
         setProgressBar(true)
     }
 
@@ -94,6 +100,14 @@ export default function Dashboard(params) {
                                     <img style={{ width: '12em', height: '10em', marginTop: '1em' }} src={logoEgresos} className="card-img-top img-fluid centerImg" alt="" />
                                     <div style={{ textAlign: 'center' }} className="card-body">
                                         <h2 className="card-title superTitulo">Egresos</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                                <div onClick={goProviders} className="card border border-primary card-flyer pointer">
+                                    <img style={{ width: '12em', height: '10em', marginTop: '1em' }} src={logoProviders} className="card-img-top img-fluid centerImg" alt="" />
+                                    <div style={{ textAlign: 'center' }} className="card-body">
+                                        <h2 className="card-title superTitulo">Proveedores</h2>
                                     </div>
                                 </div>
                             </div>
