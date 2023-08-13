@@ -22,6 +22,7 @@ const NuevaCompra = (params) => {
         medio_de_pago: 'Efectivo',
         costo_medio_pago: 0,
         comentarios: '',
+        dinerorecibido: '',
         cambio: '',
         estado: 'Recibida',
         vendedor: '',
@@ -54,6 +55,7 @@ const NuevaCompra = (params) => {
         let array = []
         for (let i = 0; i < params.datosCompra.listaProductos.length; i++) {
             let objeto = {
+                id: params.datosCompra.listaProductos[i].id,
                 codigo: params.datosCompra.listaProductos[i].codigo,
                 nombre: params.datosCompra.listaProductos[i].producto,
                 cantidad: params.datosCompra.listaProductos[i].cantidad,
@@ -72,6 +74,8 @@ const NuevaCompra = (params) => {
             domicilio: params.datosCompra.domicilio,
             medio_de_pago: params.datosCompra.medio_de_pago,
             comentarios: params.datosCompra.comentarios,
+            cambio: params.datosCompra.cambio,
+            dinerorecibido: params.datosCompra.dinerorecibido,
             estado: params.datosCompra.estado,
             vendedor: params.datosCompra.vendedor,
             id: params.datosCompra.id,
@@ -80,10 +84,10 @@ const NuevaCompra = (params) => {
             compra_n: params.datosCompra.compra_n
         }))
         setTimeout(() => {
-           // calcularTotales(array)
+            // calcularTotales(array)
         }, 100);
     }
-  
+
     function calcularTotales(prods) {
         let totales = {
             subtotal: 0,
@@ -254,13 +258,6 @@ const NuevaCompra = (params) => {
     }
 
     function getProducto(e) {
-        let validarSiListaProductos = false
-        datosCompra.listaProductos.map(p =>
-            p.codigo === e.target.value ? validarSiListaProductos = true : validarSiListaProductos = false
-        )
-        if (validarSiListaProductos) {
-            masCant(e.target.value)
-        } else {
             if (validarInventario(e.target.value)) {
                 return
             }
@@ -268,12 +265,15 @@ const NuevaCompra = (params) => {
             let precio = 0
             for (let i = 0; i < params.productos.length; i++) {
                 if (e.target.value == params.productos[i].id) {
+
                     nombre = params.productos[i].nombre
                     precio = params.productos[i].valor
                 }
             }
             let array = datosCompra.listaProductos
+            
             let objeto = {
+                id: parseInt(array.length)+parseInt(1),
                 codigo: e.target.value,
                 nombre: nombre,
                 cantidad: 1,
@@ -287,8 +287,7 @@ const NuevaCompra = (params) => {
                     listaProductos: array
                 }))
                 calcularTotales(array)
-            }, 100);
-        }
+            }, 100); 
     }
 
     function reiniciarProductos() {
@@ -303,7 +302,7 @@ const NuevaCompra = (params) => {
         let array = datosCompra.listaProductos
         reiniciarProductos()
         setTimeout(() => {
-            const temp = array.filter((art) => art.codigo !== id);
+            const temp = array.filter((art) => art.id !== id);
             setDatosCompra((valores) => ({
                 ...valores,
                 listaProductos: temp
@@ -323,13 +322,13 @@ const NuevaCompra = (params) => {
         return validarCantidad
     }
 
-    function menosCant(id) {
-        if (validarcantidad(id) > 1) {
+    function menosCant(item) {
+        if (validarcantidad(item.codigo) > 1) {
             const temp = datosCompra.listaProductos
             reiniciarProductos()
             setTimeout(() => {
                 const updatedArray = temp.map(p =>
-                    p.codigo === id ? { ...p, cantidad: p.cantidad - 1 }
+                    p.id === item.id ? { ...p, cantidad: p.cantidad - 1 }
                         : p
                 )
                 setDatosCompra((valores) => ({
@@ -355,7 +354,7 @@ const NuevaCompra = (params) => {
                 cantCarrito = element.cantidad
             }
         })
-        const nuevaCantidad=parseInt(cantCarrito) + parseInt(1)
+        const nuevaCantidad = parseInt(cantCarrito) + parseInt(1)
         if (cantidadEnInventario.cantidad < nuevaCantidad && cantidadEnInventario.cantidad != null) {
             alert('Hay ' + cantidadEnInventario.cantidad + " unidades en inventario!")
             boolean = true
@@ -363,16 +362,15 @@ const NuevaCompra = (params) => {
         return boolean
     }
 
-    function masCant(id) {
-        if (validarcantidad(id) < 100) {
-            if (validarInventario(id)) {
+    function masCant(item) {
+            if (validarInventario(item.codigo)) {
                 return
             }
             const temp = datosCompra.listaProductos
             reiniciarProductos()
             setTimeout(() => {
                 const updatedArray = temp.map(p =>
-                    p.codigo === id ? { ...p, cantidad: parseInt(p.cantidad) + 1 }
+                    p.id === item.id ? { ...p, cantidad: parseInt(p.cantidad) + 1 }
                         : p
                 )
                 setDatosCompra((valores) => ({
@@ -381,9 +379,22 @@ const NuevaCompra = (params) => {
                 }))
                 calcularTotales(updatedArray)
             }, 100);
-        } else {
-            alert('La cantidad máxima de productos es 100!')
-        }
+    }
+
+    function cambioCant(item) {
+        const temp = datosCompra.listaProductos
+        reiniciarProductos()
+        setTimeout(() => {
+            const updatedArray = temp.map(p =>
+                p.id === item.id ? { ...p, cantidad: parseInt(item.cantidad) }
+                    : p
+            )
+            setDatosCompra((valores) => ({
+                ...valores,
+                listaProductos: updatedArray
+            }))
+            calcularTotales(updatedArray)
+        }, 100);
     }
 
     function cambioCostoEnvio(e) {
@@ -401,6 +412,15 @@ const NuevaCompra = (params) => {
         setDatosCompra((valores) => ({
             ...valores,
             costo_medio_pago: e.target.value,
+        }))
+    }
+
+    function cambioRecibido(e) {
+        let cambio = parseInt(e.target.value) - parseInt(datosCompra.total_compra)
+        setDatosCompra((valores) => ({
+            ...valores,
+            dinerorecibido: e.target.value,
+            cambio: cambio
         }))
     }
 
@@ -435,13 +455,13 @@ const NuevaCompra = (params) => {
                         <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar productos</p>
                         <div onMouseOver={validarCliente}>
                             <SelectProductos obtenerProducto={getProducto} productos={params.productos}></SelectProductos>
-                            <ShoppingCart masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos} productos={params.productos} editando={datosCompra.id}></ShoppingCart>
+                            <ShoppingCart cambioCant={cambioCant} masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos} productos={params.productos} editando={datosCompra.id}></ShoppingCart>
                         </div>
                         <textarea name='comentarios' placeholder='Comentarios compra...' onChange={cambioComentario} className="form-control" value={datosCompra.comentarios}></textarea>
                     </div>
 
                     <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
-                        <div style={{ textAlign: 'center', marginTop: '0.2em' }} className="border border-success">
+                        <div style={{ textAlign: 'center', marginTop: '0.2em' }} className="border border-success rounded">
                             <h6 style={{ textAlign: 'center', marginTop: '0.4em' }}>Valor total productos</h6>
                             <h6 style={{ color: 'green', textAlign: 'center', marginBottom: '0.4em' }}>$ {glob.formatNumber(datosCompra.total_compra)}</h6>
                             <hr style={{ height: '2px', borderWidth: '0', color: 'gray', backgroundColor: 'gray' }}></hr>
@@ -450,7 +470,7 @@ const NuevaCompra = (params) => {
                             <h6 style={{ texAlign: 'center', marginTop: '0.4em' }}>Total con envio</h6>
                             <h6 style={{ color: 'green', textAlign: 'center', marginBottom: '0.4em' }}>$ {glob.formatNumber(parseInt(datosCompra.total_compra) + parseInt(datosCompra.domicilio))}</h6>
                             <hr style={{ height: '2px', borderWidth: '0', color: 'gray', backgroundColor: 'gray' }}></hr>
-                            <div style={{ padding: '1em' }}>
+                            <div style={{ padding: '0.6em' }}>
                                 Forma de pago:
                                 <select onChange={cambiarModoPago} name='categoria' id='selectCate' className="form-select rounded" >
                                     {opcionesPago.map((item, index) => {
@@ -463,9 +483,14 @@ const NuevaCompra = (params) => {
                             <h6 style={{ textAlign: 'center', display: 'none' }}>Costo medio de pago</h6>
                             <input name='medio_de_pago' type='hidden' className="form-control" onChange={cambioCostoMedioPago} style={{ color: 'green', textAlign: 'center' }} value={datosCompra.costo_medio_pago}></input>
                             <hr style={{ height: '2px', borderWidth: '0', color: 'gray', backgroundColor: 'gray' }}></hr>
-
                             <h5 style={{ textAlign: 'center', marginTop: '0.4em' }}>Total a pagar</h5>
                             <h5 style={{ color: 'green', textAlign: 'center', marginBottom: '0.4em' }}>$ {glob.formatNumber(parseInt(datosCompra.total_compra) + parseInt(datosCompra.domicilio) + parseInt(datosCompra.costo_medio_pago))}</h5>
+                        </div>
+                        <div style={{ textAlign: 'center', marginTop: '1.5em' }} className="border border-danger rounded">
+                            <h5 style={{ textAlign: 'center', marginTop: '0.4em' }}>Dinero recibido</h5>
+                            <input className="form-control" type='number' name='dinerorecibido' onChange={cambioRecibido} defaultValue={datosCompra.dinerorecibido}></input>
+                            <h5 style={{ textAlign: 'center', marginTop: '0.4em' }}>Cambio</h5>
+                            <input className="form-control" type='number' name='cambio' style={{ color: 'red', marginBottom: '0.4em' }} value={datosCompra.cambio == '' ? '0' : glob.formatNumber(parseInt(datosCompra.cambio))}></input>
                         </div>
                     </div>
                     <div style={{ margin: '1em' }} align='center' className='container'>

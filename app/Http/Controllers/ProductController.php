@@ -46,6 +46,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $id = '';
         if ($request->hasFile('imagen')) {
             $file = $request->file('imagen');
             $fileName = time() . "-" . $file->getClientOriginalName();
@@ -55,15 +56,16 @@ class ProductController extends Controller
                 'nombre_imagen' => $fileName,
                 'fk_producto' => $id
             ]);
-            $producto = DB::table('productos')->join('imagenes_productos', function (JoinClause $join) use ($id) {
-                $join->on('productos.id', '=', "imagenes_productos.fk_producto")
-                    ->where('productos.id', '=', $id);
-            })->get();
         } else {
             $id = $this->ingresarProducto($request);
-            $producto = DB::table('productos')->where('id', '=', $id)->get();
-            foreach ($producto as $item) {
+        }
+        $producto = DB::table('productos')->where('id', '=', $id)->get();
+        foreach ($producto as $item) {
+            $imagenes = DB::table('imagenes_productos')->where('fk_producto', '=', $id)->first();
+            if ($imagenes == null) {
                 $item->nombre_imagen = '';
+            } else {
+                $item->nombre_imagen = $imagenes->nombre_imagen;
             }
         }
         $categorias = DB::table('categorias')->get();
@@ -88,7 +90,7 @@ class ProductController extends Controller
         return DB::getPdo()->lastInsertId();
     }
 
-    public function show(string $id) //: Response
+    public function show(string $id)
     {
         // Eliminar en este metodo porque no se conseguido reescribir el method get por delete en el form react....
         // $validarEliminar = DB::table('promociones')->where('ref_producto', '=', $id)->first();
@@ -124,16 +126,14 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         //Este metodo devuelve un array, por tanto en componente react se debe tomar en los parms[0] y el id se registra en fk_producto.
-        $img = DB::table('imagenes_productos')->where('fk_producto', '=', $id)->get();
-        $producto = null;
-        $nums = count($img);
-        if ($nums == 0) {
-            $producto = DB::table('productos')->where('id', '=', $id)->get();
-        } else {
-            $producto = DB::table('productos')->join('imagenes_productos', function (JoinClause $join) use ($id) {
-                $join->on('productos.id', '=', 'imagenes_productos.fk_producto')
-                    ->where('productos.id', '=', $id);
-            })->get();
+        $producto = DB::table('productos')->where('id', '=', $id)->get();
+        foreach ($producto as $item) {
+            $imagenes = DB::table('imagenes_productos')->where('fk_producto', '=', $id)->first();
+            if ($imagenes == null) {
+                $item->nombre_imagen = '';
+            } else {
+                $item->nombre_imagen = $imagenes->nombre_imagen;
+            }
         }
         $categorias = DB::table('categorias')->get();
         $globalVars = $this->global->getGlobalVars();
@@ -162,14 +162,18 @@ class ProductController extends Controller
             'costo' => $request->costo,
             'valor' => $request->valor,
         ]);
-        $producto = DB::table('productos')->join('imagenes_productos', function (JoinClause $join) use ($id) {
-            $join->on('productos.id', '=', 'imagenes_productos.fk_producto')
-                ->where('productos.id', '=', $id);
-        })->get();
+        $producto = DB::table('productos')->where('id', '=', $id)->get();
+        foreach ($producto as $item) {
+            $imagenes = DB::table('imagenes_productos')->where('fk_producto', '=', $id)->first();
+            if ($imagenes == null) {
+                $item->nombre_imagen = '';
+            } else {
+                $item->nombre_imagen = $imagenes->nombre_imagen;
+            }
+        }
         $categorias = DB::table('categorias')->get();
         $globalVars = $this->global->getGlobalVars();
         $estado = "¡Producto actualizado!";
-        //  $info = DB::table('info_pagina')->first();
         $token = csrf_token();
         return Inertia::render('Product/NewProduct', compact('producto', 'categorias', 'globalVars', 'estado', 'token'));
     }

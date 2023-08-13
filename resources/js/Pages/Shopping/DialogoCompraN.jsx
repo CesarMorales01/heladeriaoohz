@@ -13,7 +13,7 @@ const DialogoCompraN = (params) => {
 
     useEffect(() => {
         if (Object.keys(params.datos).length > 0) {
-            if (params.datos.cliente.cedula != cliente || params.datos.compra_n != compran) {
+            if (params.datos.id != idCompra) {
                 const array = []
                 setIdCompra(params.datos.id)
                 setLista(array)
@@ -25,7 +25,7 @@ const DialogoCompraN = (params) => {
 
     useEffect(() => {
         fetchProductos()
-    }, [cliente, compran])
+    }, [idCompra])
 
     function fetchProductos() {
         const enlace = params.url + 'shopping/shoppingproducts/' + idCompra
@@ -101,7 +101,6 @@ const DialogoCompraN = (params) => {
                     </div>
                     <div className="modal-footer">
                         <PrimaryButton type="button" data-dismiss="modal">Close</PrimaryButton>
-
                     </div>
                 </div>
             </div>

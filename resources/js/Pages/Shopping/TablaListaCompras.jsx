@@ -115,7 +115,7 @@ const TablaListaCompras = (params) => {
                                         {item.comentario_cliente.substring(0, 60)}...
                                     </td>
                                     <td>
-                                        <button style={{ backgroundColor: 'white', color: 'black' }} id='btnCompraN' onClick={() => abrirCompraN(item)} className='btn btn-outline-info rounded' type="button" data-toggle="modal" data-target="#dialogoCompraN">
+                                        <button style={{ backgroundColor: 'white', color: 'black' }} onClick={() => abrirCompraN(item)} className='btn btn-outline-info rounded' type="button" data-toggle="modal" data-target="#dialogoCompraN">
                                             {item.listaProductos[0].producto} x{item.listaProductos[0].cantidad}...
                                         </button>
                                     </td>

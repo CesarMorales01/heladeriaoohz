@@ -43,16 +43,13 @@ const NewProduct = (params) => {
             setDisplayBtnBorrar('inline')
             // Se recibe un array en params.product, el id se registra en fk_producto
             let img = ''
-            let id=''
-            if (!params.producto[0].nombre_imagen) {
+            if (params.producto[0].nombre_imagen=='') {
                 img = 'noPreview.jpg'
-                id= params.producto[0].id
             } else {
                 img = params.producto[0].nombre_imagen
-                id=params.producto[0].fk_producto
             }
             setProducto({
-                id: id,
+                id: params.producto[0].id,
                 referencia: params.producto[0].referencia,
                 categoria: params.producto[0].categoria,
                 nombre: params.producto[0].nombre,
@@ -63,7 +60,6 @@ const NewProduct = (params) => {
                 imagen: img
             })
         }
-
     }, [])
 
     useEffect(() => {
@@ -230,7 +226,7 @@ const NewProduct = (params) => {
         form.action = route('product.actualizar', producto.id)
         form.submit()
     }
-    // PONER FORMA DE IDENTIFICAR SI UN PRODUCTO TIENE 0 INVENTARIO O SI TIENE CANTIDAD NULL
+  
     return (
         <AuthenticatedLayout
             user={params.auth.user} info={params.info} url={params.globalVars.urlRoot} urlImagenes={params.globalVars.urlImagenes} >

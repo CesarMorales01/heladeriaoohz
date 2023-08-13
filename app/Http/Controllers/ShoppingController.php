@@ -75,6 +75,8 @@ class ShoppingController extends Controller
             'medio_de_pago' => $datos->medio_de_pago,
             'costo_medio_pago' => $datos->costo_medio_pago,
             'comentarios' => $datos->comentarios,
+            'dinerorecibido'=>$datos->dinerorecibido,
+            'cambio' => $datos->cambio,
             'estado' => 'Recibida',
             'vendedor' => Auth()->user()->name
         ]);
@@ -106,6 +108,8 @@ class ShoppingController extends Controller
             'medio_de_pago' => $datos->medio_de_pago,
             'costo_medio_pago' => $datos->costo_medio_pago,
             'comentarios' => $datos->comentarios,
+            'dinerorecibido'=>$datos->dinerorecibido,
+            'cambio'=>$datos->cambio,
             'estado' => 'Recibida'
         ]);
         $nums = count($datos->listaProductos);
