@@ -25,6 +25,7 @@ class CategoryController extends Controller
         $auth = Auth()->user();
         $categorias = DB::table('categorias')->orderBy('id', 'desc')->get();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $token = csrf_token();
        // $info = DB::table('info_pagina')->first();
         return Inertia::render('Category/Categories', compact('auth', 'categorias', 'globalVars', 'token'));
@@ -65,9 +66,9 @@ class CategoryController extends Controller
         $auth = Auth()->user();
         $categorias = DB::table('categorias')->orderBy('id', 'desc')->get();
         $globalVars = $this->global->getGlobalVars();
-        $info = DB::table('info_pagina')->first();
+        $globalVars->info=DB::table('info_pagina')->first();
         $token = csrf_token();
-        return Inertia::render('Category/Categories', compact('auth', 'categorias', 'globalVars', 'token', 'estado', 'info', 'duracionAlert'));
+        return Inertia::render('Category/Categories', compact('auth', 'categorias', 'globalVars', 'token', 'estado', 'duracionAlert'));
     }
 
 
@@ -112,10 +113,10 @@ class CategoryController extends Controller
         $auth = Auth()->user();
         $categorias = DB::table('categorias')->orderBy('id', 'desc')->get();
         $globalVars = $this->global->getGlobalVars();
-        $info = DB::table('info_pagina')->first();
+        $globalVars->info=DB::table('info_pagina')->first();
         $token = csrf_token();
         $estado = "¡Categoria actualizada!";
         $duracionAlert=1000;
-        return Inertia::render('Category/Categories', compact('auth', 'categorias', 'globalVars', 'token', 'estado', 'info', 'duracionAlert'));
+        return Inertia::render('Category/Categories', compact('auth', 'categorias', 'globalVars', 'token', 'estado', 'duracionAlert'));
     }
 }

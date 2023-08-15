@@ -229,7 +229,7 @@ const NewProduct = (params) => {
   
     return (
         <AuthenticatedLayout
-            user={params.auth.user} info={params.info} url={params.globalVars.urlRoot} urlImagenes={params.globalVars.urlImagenes} >
+            user={params.auth.user} globalVars={params.globalVars} >
             <Head title="Producto" />
             <div className="container justify-content-justify">
                 <h1 style={{ marginTop: '0.5em', fontSize: '1.5em' }} id="titulo" className="text-center"> {producto.id == '' ? 'Ingresar' : 'Editar'} producto</h1>

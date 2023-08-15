@@ -165,7 +165,7 @@ const Gastos = (params) => {
 
     return (
         <AuthenticatedLayout
-            user={params.auth} info={params.info} urlImagenes={params.globalVars.urlImagenes}
+            user={params.auth} globalVars={params.globalVars}
         >
             <Head title="Ingresos" />
             <div className='container'>

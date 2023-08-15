@@ -1,13 +1,27 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Link } from '@inertiajs/react';
-import fondo from '../../../public/Images/Config/fondo1.jpg'
+import { useState, useEffect } from 'react';
 
-export default function Guest({ children }) {
+export default function Guest({ children, globalVars }) {
+
+    useEffect(() => {
+       getImgLogo()
+    }, [])
+
+    function getImgLogo() {
+        let img = ''
+        if (globalVars.info.logo == null || globalVars.info.logo=='') {
+            img = globalVars.myUrl + 'Images/Config/noPreview.jpg'
+        }else{
+            img = globalVars.myUrl + 'Images/Products/'+ globalVars.info.logo
+        }
+        document.getElementById('logo').src = img
+    }
     return (
         <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <div className=" sm:max-w-md mt-6 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg" >
                 <Link href="/">
-                <img style={{ width: '10em', height: '10em', marginTop: '1em' }} src={fondo} className="img-fluid rounded" alt="" />
+                    <img id='logo' style={{ width: '10em', height: '10em', marginTop: '1em' }} className="img-fluid rounded" alt="" />
                 </Link>
             </div>
 

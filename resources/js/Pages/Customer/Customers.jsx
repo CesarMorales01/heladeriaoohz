@@ -90,11 +90,6 @@ const Clientes = (params) => {
         }
     }
 
-    function goClientes() {
-        //setProgressBar(true)
-        // window.location = params.globalVars.myUrl + "customer"
-    }
-
     function goNewClient() {
         setProgressBar(true)
         window.location = params.globalVars.myUrl + "customer/create"
@@ -102,7 +97,7 @@ const Clientes = (params) => {
 
     return (
         <AuthenticatedLayout
-            user={params.auth} info={params.info} urlImagenes={params.globalVars.urlImagenes}
+            user={params.auth} globalVars={params.globalVars}
         >
             <Head title="Clientes" />
             <div style={{ display: progressBar ? '' : 'none' }}>

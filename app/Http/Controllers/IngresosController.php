@@ -41,6 +41,7 @@ class IngresosController extends Controller
         ->orderBy('ingresos.id', 'desc')->get();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $categorias = DB::table('categorias_ingresos')->get();
         $token = csrf_token();
         $estado = '';

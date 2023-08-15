@@ -25,6 +25,7 @@ class ClientesController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $clientes = DB::table('clientes')->paginate(100);
         $telefono = [];
         foreach ($clientes as $cliente) {
@@ -35,8 +36,7 @@ class ClientesController extends Controller
         if($state!='nothing'){
             $estado=$state;
         }
-        $info = DB::table('info_pagina')->first();
-        return Inertia::render('Customer/Customers', compact('auth', 'clientes', 'globalVars', 'info', 'estado'));
+        return Inertia::render('Customer/Customers', compact('auth', 'clientes', 'globalVars', 'estado'));
     }
 
     public function create()
@@ -46,10 +46,10 @@ class ClientesController extends Controller
         $deptos = DB::table('departamentos')->get();
         $municipios = DB::table('municipios')->get();
         $token = csrf_token();
-        $info = DB::table('info_pagina')->first();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $estado='';
-        return Inertia::render('Customer/NewClient', compact('auth', 'cliente', 'globalVars', 'deptos', 'municipios', 'token', 'info', 'estado'));
+        return Inertia::render('Customer/NewClient', compact('auth', 'cliente', 'globalVars', 'deptos', 'municipios', 'token', 'estado'));
     }
 
     public function store(Request $request)
@@ -125,6 +125,7 @@ class ClientesController extends Controller
         $cliente->usuario = $usuario;
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $deptos = DB::table('departamentos')->get();
         $municipios = DB::table('municipios')->get();
         $token = csrf_token();

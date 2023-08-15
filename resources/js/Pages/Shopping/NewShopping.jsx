@@ -439,7 +439,7 @@ const NuevaCompra = (params) => {
     }
 
     return (
-        <AuthenticatedLayout user={params.auth} info={params.datosPagina} urlImagenes={params.globalVars.urlImagenes}>
+        <AuthenticatedLayout user={params.auth} globalVars={params.globalVars}>
             <Head title="Productos" />
             <div className="container">
                 <a id='goShoppingIndex' style={{ display: 'none' }} href={route('shopping.index')}></a>

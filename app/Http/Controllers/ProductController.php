@@ -23,6 +23,7 @@ class ProductController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $productos = DB::table('productos')->leftJoin('categorias', 'productos.category_id', '=', 'categorias.id')
             ->select('productos.*', 'categorias.nombre as categoria')
             ->orderBy('id', 'desc')->paginate(100);
@@ -40,6 +41,7 @@ class ProductController extends Controller
         $categorias = DB::table('categorias')->get();
         $producto = ['id' => '', 'nombre' => '', 'imagen' => ''];
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $token = csrf_token();
         return Inertia::render('Product/NewProduct', compact('producto', 'categorias', 'globalVars', 'token'));
     }
@@ -70,6 +72,7 @@ class ProductController extends Controller
         }
         $categorias = DB::table('categorias')->get();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $token = csrf_token();
         $estado = "¡Producto registrado!";
         $auth = Auth()->user();
@@ -116,6 +119,7 @@ class ProductController extends Controller
         }
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $productos = DB::table('productos')->leftJoin('categorias', 'productos.category_id', '=', 'categorias.id')
             ->select('productos.*', 'categorias.nombre as categoria')
             ->orderBy('id', 'desc')->paginate(100);
@@ -137,6 +141,7 @@ class ProductController extends Controller
         }
         $categorias = DB::table('categorias')->get();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $token = csrf_token();
         return Inertia::render('Product/NewProduct', compact('producto', 'categorias', 'globalVars', 'token'));
     }
@@ -173,6 +178,7 @@ class ProductController extends Controller
         }
         $categorias = DB::table('categorias')->get();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $estado = "¡Producto actualizado!";
         $token = csrf_token();
         return Inertia::render('Product/NewProduct', compact('producto', 'categorias', 'globalVars', 'estado', 'token'));

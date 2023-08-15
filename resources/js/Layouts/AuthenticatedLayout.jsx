@@ -7,7 +7,7 @@ export default function Authenticated({ user, header, children, globalVars }) {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <nav className='navBarFondo' >
+            <nav style={{ backgroundColor: globalVars.info.color_pagina }} >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
                     <div className="flex justify-between h-16">
                         <div className="flex">
@@ -16,30 +16,30 @@ export default function Authenticated({ user, header, children, globalVars }) {
                             </div>
                             <div className="hidden space-x-8 md:-my-px md:ml-10 md:flex ">
                                 <NavLink href={route('product.index')} active={route().current('product.index')}>
-                                   Productos
+                                    Productos
                                 </NavLink>
-                                <NavLink  href={route('shopping.index')} active={route().current('shopping.index')}>
-                                   Ventas
+                                <NavLink href={route('shopping.index')} active={route().current('shopping.index')}>
+                                    Ventas
                                 </NavLink>
-                                <NavLink   href={route('customer.list', 'nothing')} active={route().current('customer.list')}>
-                                   Clientes
+                                <NavLink href={route('customer.list', 'nothing')} active={route().current('customer.list')}>
+                                    Clientes
                                 </NavLink>
-                                <NavLink   href={route('income.list', 'nothing')} active={route().current('income.list')}>
-                                   Ingresos
+                                <NavLink href={route('income.list', 'nothing')} active={route().current('income.list')}>
+                                    Ingresos
                                 </NavLink>
-                                <NavLink   href={route('spend.list', 'nothing')} active={route().current('spend.list')}>
-                                   Egresos
+                                <NavLink href={route('spend.list', 'nothing')} active={route().current('spend.list')}>
+                                    Egresos
                                 </NavLink>
-                                <NavLink   href={route('provider.list', 'nothing')} active={route().current('provider.list')}>
-                                   Proveedores
+                                <NavLink href={route('provider.list', 'nothing')} active={route().current('provider.list')}>
+                                    Proveedores
                                 </NavLink>
-                                <NavLink   href={route('report.list', 'nothing')} active={route().current('report.list')}>
-                                   Informes
+                                <NavLink href={route('report.list', 'nothing')} active={route().current('report.list')}>
+                                    Informes
                                 </NavLink>
 
                             </div>
                         </div>
-                       
+
                         <div className="hidden md:flex md:items-center md:ml-6">
                             <div className="ml-3 relative">
                                 <Dropdown>
@@ -68,7 +68,8 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-
+                                        <Dropdown.Link href={route('setting.index')}>Configuraciones</Dropdown.Link>
+                                        <Dropdown.Link href={route('profile.edit')}>Cuenta</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Salir
                                         </Dropdown.Link>

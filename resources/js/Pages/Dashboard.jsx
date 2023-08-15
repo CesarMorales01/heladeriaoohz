@@ -54,6 +54,7 @@ export default function Dashboard(params) {
     return (
         <AuthenticatedLayout
             user={params.auth}
+            globalVars={params.globalVars}
         >
             <Head title="Heladeria Oohz" />
             <div className="py-2">

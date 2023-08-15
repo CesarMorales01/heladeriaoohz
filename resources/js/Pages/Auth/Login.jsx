@@ -8,7 +8,7 @@ import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import GlobalFunctions from '../services/GlobalFunctions';
 
-export default function Login({ status, canResetPassword }) {
+export default function Login({ status, canResetPassword, globalVars }) {
     const glob = new GlobalFunctions();
     const [message, setMessage] = useState('')
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -69,7 +69,7 @@ export default function Login({ status, canResetPassword }) {
     }
 
     return (
-        <GuestLayout>
+        <GuestLayout globalVars={globalVars}>
             <Head title="Log in" />
 
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
@@ -125,7 +125,7 @@ export default function Login({ status, canResetPassword }) {
                             ¿Olvidaste tu contraseña?
                         </Link>
                     )}
-                    <button onClick={goLogin} id='btnLogin' style={{ backgroundColor: '#0ea6ab' }} className="ml-4 btn btn-primary" disabled={processing}>
+                    <button onClick={goLogin} id='btnLogin' style={{ backgroundColor: globalVars.info.color_pagina == '' ? 'gray' : globalVars.info.color_pagina }} className="ml-4 btn btn-primary" disabled={processing}>
                         Log in
                     </button>
                     <button type='button' id='btnLoginLoading' disabled style={{ backgroundColor: 'gray', display: 'none' }} className="ml-4 btn btn-primary">

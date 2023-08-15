@@ -44,7 +44,7 @@ const Categories = (params) => {
     }
 
     return (
-        <AuthenticatedLayout user={params.auth} info={params.info} urlImagenes={params.globalVars.urlImagenes}>
+        <AuthenticatedLayout user={params.auth} globalVars={params.globalVars} urlImagenes={params.globalVars.urlImagenes}>
             <Head title="Categorias" />
             <div style={{ display: progressBar ? '' : 'none' }}>
                 <Progressbar progress={progressBar}></Progressbar>

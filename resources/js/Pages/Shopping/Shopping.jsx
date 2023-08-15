@@ -99,7 +99,7 @@ const ListaCompras = (params) => {
     }
 
     return (
-        <AuthenticatedLayout user={params.auth} info={params.info} urlImagenes={params.globalVars.urlImagenes}>
+        <AuthenticatedLayout user={params.auth} globalVars={params.globalVars}>
             <Head title="Productos" />
             <div style={{ display: progressBar ? '' : 'none' }}>
                 <Progressbar progress={progressBar}></Progressbar>

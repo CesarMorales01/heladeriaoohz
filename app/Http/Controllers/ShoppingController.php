@@ -25,6 +25,7 @@ class ShoppingController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $compras = DB::table('lista_compras')->orderBy('id', 'desc')->paginate(100);
         foreach ($compras as $compra) {
             // Validar si la compra pertenece a un cliente registrado... si no mandar id
@@ -51,6 +52,7 @@ class ShoppingController extends Controller
         $clientes = $this->all_clientes();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $productos = $this->all_products();
         $token = csrf_token();
         $datosCompra = new stdClass();
@@ -173,6 +175,7 @@ class ShoppingController extends Controller
         DB::table('lista_compras')->where('id', '=', $request->idCompra)->delete();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $compras = DB::table('lista_compras')->orderBy('id', 'desc')->paginate(100);
         foreach ($compras as $compra) {
             if ($compra->cliente != '') {
@@ -242,6 +245,7 @@ class ShoppingController extends Controller
         $clientes = $this->all_clientes();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $productos = $this->all_products();
         $token = csrf_token();
         $datosCompra = DB::table('lista_compras')->where('id', '=', $id)->first();

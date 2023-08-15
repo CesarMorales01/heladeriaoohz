@@ -22,6 +22,7 @@ class ProveedoresController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $estado = '';
         if ($state != 'nothing') {
             $estado = $state;

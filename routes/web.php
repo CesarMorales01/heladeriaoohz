@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShoppingController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/provider/list/{state?}', [ProveedoresController::class, 'listar'])->name('provider.list');
     Route::resource('/cateProvider', CategoriesProvidersController::class);
     Route::get('/provider/list/bydate/{finicial}/{ffinal}/{cate?}', [ProveedoresController::class, 'listByDate']);
+    Route::resource('/setting', SettingController::class);
 });
 
 require __DIR__.'/auth.php';

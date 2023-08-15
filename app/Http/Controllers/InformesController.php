@@ -22,6 +22,7 @@ class InformesController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $estado = '';
         if ($state != 'nothing') {
             $estado = $state;
@@ -29,8 +30,9 @@ class InformesController extends Controller
         $date = now();
         $año = date_format($date, "y");
         $mes = date_format($date, "m");
-        $ffinal = $año . "-" . $mes . "-" . '31';
-        $finicial = $año . "-" . $mes . "-" . '01';
+        $dia = date_format($date, "d");
+        $ffinal = $año . "-" . $mes . "-" . $dia;
+        $finicial = $año . "-" . $mes . "-" . $dia;
         $ingresos = app(IngresosController::class)->listByDate($finicial, $ffinal, '');
         $totalIngresos = intval($ingresos->original->ventas) + intval($ingresos->original->ingresos);
         $gastos = app(GastosController::class)->listByDate($finicial, $ffinal, '');

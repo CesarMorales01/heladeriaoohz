@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 use App\Models\GlobalVars;
+use Illuminate\Support\Facades\DB;
 
 class SessionController extends Controller
 {
@@ -18,6 +18,7 @@ class SessionController extends Controller
     public function index(){
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info = DB::table('info_pagina')->first();
         return Inertia::render('Dashboard', compact('auth', 'globalVars'));
     }
 }

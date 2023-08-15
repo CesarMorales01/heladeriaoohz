@@ -23,9 +23,9 @@ class ClientesImcompletosController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $clientes = DB::table('keys')->where('cedula', '=', null)->orWhere('cedula', '=', '')->paginate(100);
-        $info = DB::table('info_pagina')->first();
-        return Inertia::render('Incompleteregister/List', compact('auth', 'clientes', 'globalVars', 'info'));
+        return Inertia::render('Incompleteregister/List', compact('auth', 'clientes', 'globalVars'));
     }
 
     public function create()
@@ -50,14 +50,14 @@ class ClientesImcompletosController extends Controller
         $this->ActualizarCrearClave($request);
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $clientes = DB::table('clientes')->paginate(100);
         foreach ($clientes as $cliente) {
             $telefono = DB::table('telefonos_clientes')->where('cedula', '=', $cliente->cedula)->get();
             $cliente->telefonos = $telefono;
         }
         $estado = "¡Nuevo cliente registrado!";
-        $info = DB::table('info_pagina')->first();
-        return Inertia::render('Customer/Customers', compact('auth', 'clientes', 'globalVars', 'estado', 'info'));
+        return Inertia::render('Customer/Customers', compact('auth', 'clientes', 'globalVars', 'estado'));
     }
 
     public function ActualizarCrearClave($request)
@@ -84,11 +84,11 @@ class ClientesImcompletosController extends Controller
         $cliente = DB::table('keys')->where('email', '=', $id)->first();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         $deptos = DB::table('departamentos')->get();
         $municipios = DB::table('municipios')->get();
         $token = csrf_token();
-        $info = DB::table('info_pagina')->first();
-        return Inertia::render('Incompleteregister/EditClient', compact('auth', 'cliente', 'globalVars', 'deptos', 'municipios', 'token', 'info'));
+        return Inertia::render('Incompleteregister/EditClient', compact('auth', 'cliente', 'globalVars', 'deptos', 'municipios', 'token'));
     }
 
     public function update(Request $request, string $id)

@@ -18,15 +18,15 @@ const Reports = (params) => {
     const [totalGastos, setTotalGastos] = useState(params.totalGastos)
     const [utilidad, setUtilidad] = useState(0)
     const [fechas, setFechas] = useState({
-        fechaInicio: '',
-        fechaFinal: ''
+        fechaInicio: glob.getFecha(),
+        fechaFinal: glob.getFecha()
     })
     const [productosMasVendidos, setProductosMasVendidos] = useState([])
     const [optionSelected, setOptionSelected] = useState('')
     const [topClientes, setTopClientes] = useState([])
+    const [esteMes, setesteMes] = useState(false)
 
     useEffect(() => {
-        cargarFechas()
         calcularUtilidad()
         if (params.estado != '') {
             sweetAlert(params.estado)
@@ -36,12 +36,38 @@ const Reports = (params) => {
     useEffect(() => {
         if (cargar) {
             fetchListByDate()
-        }
+            validarSwitch()
+        }  
     }, [fechas])
 
     useEffect(() => {
         calcularUtilidad()
     }, [totalIngresos, totalGastos])
+
+    function validarSwitch(){
+        const esteMes = fechas.fechaInicio.split('-')
+        const fechaHoy=glob.getFecha().split('-')
+        if(esteMes[1]!=fechaHoy[1]){
+            setesteMes(true)
+            document.getElementById('switchEsteMes').style.display='none'
+        }else{
+            document.getElementById('switchEsteMes').style.display='' 
+        }
+    }
+
+    function cambioesteMes(e) {
+        setCargar(true)
+        if (esteMes) {
+            setesteMes(false)
+            setFechas({
+                fechaInicio: glob.getFecha(),
+                fechaFinal: glob.getFecha()
+            })
+        } else {
+            cargarFechas()
+            setesteMes(true)
+        }
+    }
 
     function fetchListByDate() {
         const url = params.globalVars.myUrl + 'report/list/bydate/' + fechas.fechaInicio + '/' + fechas.fechaFinal
@@ -211,7 +237,7 @@ const Reports = (params) => {
 
     return (
         <AuthenticatedLayout
-            user={params.auth} info={params.info} urlImagenes={params.globalVars.urlImagenes}
+            user={params.auth} globalVars={params.globalVars}
         >
             <Head title="Informes" />
             <div className="py-2">
@@ -240,6 +266,18 @@ const Reports = (params) => {
                                         </svg>
                                     </button>
                                 </div>
+                            </div>
+                            <div style={{ marginTop: '1em' }} className="container">
+                                <label className="relative inline-flex items-center mr-5 cursor-pointer">
+                                    <input onChange={cambioesteMes} type="checkbox" value="" className="sr-only peer" checked={esteMes ? false : true}/>
+                                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Solo hoy</span>
+                                </label>
+                                <label id='switchEsteMes' className="relative inline-flex items-center cursor-pointer">
+                                    <input onChange={cambioesteMes} type="checkbox" value="" className="sr-only peer" checked={esteMes}/>
+                                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Este mes</span>
+                                </label>
                             </div>
                         </div>
                         <div style={{ marginTop: '0.5em', textAlign: 'center' }} className="col-12" >
