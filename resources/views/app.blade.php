@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
+    <title inertia>{{ config('app.name', 'Heladeria Oohz') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -20,7 +20,7 @@
 
     <!-- PWA  -->
     <meta name="theme-color" content="#6777ef" />
-    <link rel="apple-touch-icon" href="{{ asset('plus.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icon.png') }}">
     <link rel="manifest" href="{{ asset('/manifest.json') }}">
 
 </head>

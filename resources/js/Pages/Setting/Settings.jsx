@@ -186,6 +186,7 @@ const Settings = (params) => {
             <Head title="Productos" />
             <div className="container justify-content-justify">
                 <h1 style={{ marginTop: '0.5em', fontSize: '1.5em' }} id="titulo" className="text-center">Configuración aplicacion web</h1>
+				<h5 className="text-center">(Algunos de estos datos son usados en caso de extender a página web) </h5>
                 <form onSubmit={fetchIngresarDatos} method="POST" id="formCrear" action={route('setting.store')} encType="multipart/form-data">
                     <div className="row justify-content-around">
                         <div className="col-lg-6 col-md-6 col-sm-12 col-12">

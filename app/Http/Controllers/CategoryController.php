@@ -27,7 +27,6 @@ class CategoryController extends Controller
         $globalVars = $this->global->getGlobalVars();
         $globalVars->info=DB::table('info_pagina')->first();
         $token = csrf_token();
-       // $info = DB::table('info_pagina')->first();
         return Inertia::render('Category/Categories', compact('auth', 'categorias', 'globalVars', 'token'));
     }
 

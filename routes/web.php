@@ -15,6 +15,8 @@ use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShoppingController;
+use App\Http\Controllers\ToppingsController;
+use App\Http\Controllers\ToppingsToCarController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SessionController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -30,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('/shopping', ShoppingController::class);
     Route::get('/shopping/shoppingChangeState/{state}/{value}', [ShoppingController::class, 'shoppingChangeState']);
     Route::get('/shopping/shoppingproducts/{id}', [ShoppingController::class, 'getProductosComprados']);
+    Route::get('/print/{id}', [ShoppingController::class, 'printList'])->name('shopping.printList');
     Route::post('/shopping/save', [ShoppingController::class, 'save']);
     Route::post('/shopping/actualizar', [ShoppingController::class, 'actualizar']);
     Route::resource('/category', CategoryController::class);
@@ -59,6 +62,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('/cateProvider', CategoriesProvidersController::class);
     Route::get('/provider/list/bydate/{finicial}/{ffinal}/{cate?}', [ProveedoresController::class, 'listByDate']);
     Route::resource('/setting', SettingController::class);
+    Route::resource('/topping', ToppingsController::class);
+    Route::get('/topping/list/{state?}', [ToppingsController::class, 'listar'])->name('topping.list');
+    Route::post('/toppingtocar/save', [ToppingsToCarController::class, 'save']);
+    Route::post('/toppingtocar/actualizar', [ToppingsToCarController::class, 'actualizar']);
+    Route::get('/toppingtocar/{fk_prod}', [ToppingsToCarController::class, 'borrar']);
+    Route::get('/toppingtocar/borrarone/{fk_prod}', [ToppingsToCarController::class, 'borrarOne']);
 });
+
+
 
 require __DIR__.'/auth.php';

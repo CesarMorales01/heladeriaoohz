@@ -31,7 +31,7 @@ const NuevoGasto = (params) => {
     }, [])
 
     function validar() {
-        if (gasto.valor != '') {
+        if (gasto.valor != '' && gasto.categoria!='') {
             loadingOn()
             document.getElementById('formCrear').submit()
         } else {
@@ -41,7 +41,7 @@ const NuevoGasto = (params) => {
 
     function sweetAlert() {
         Swal.fire({
-            title: 'Ingresa un valor!',
+            title: 'Ingresa categoria y/o valor!',
             icon: 'warning',
             timer: 1500,
         })

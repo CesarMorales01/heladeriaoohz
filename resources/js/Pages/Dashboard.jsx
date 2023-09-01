@@ -8,6 +8,7 @@ import logoIngresos from '../../../public/Images/Config/ingresos.jpg'
 import logoEgresos from '../../../public/Images/Config/spend.jpg'
 import logoInformes from '../../../public/Images/Config/reports.webp'
 import logoProviders from '../../../public/Images/Config/provider.jpg'
+import toppingsLogo from '../../../public/Images/Config/toppings.png'
 import Progressbar from './UIGeneral/ProgressBar'
 import React, { useState, useEffect } from 'react'
 
@@ -19,6 +20,10 @@ export default function Dashboard(params) {
         setProgressBar(true)
     }
 
+    function goToppings() {
+        window.location = params.globalVars.myUrl + "topping/list/nothing"
+        setProgressBar(true)
+    }
 
     function goVentas() {
         window.location = params.globalVars.myUrl + "shopping"
@@ -56,7 +61,7 @@ export default function Dashboard(params) {
             user={params.auth}
             globalVars={params.globalVars}
         >
-            <Head title="Heladeria Oohz" />
+            <Head title="Home" />
             <div className="py-2">
                 <div style={{ display: progressBar ? '' : 'none' }}>
                     <Progressbar progress={progressBar}></Progressbar>
@@ -69,6 +74,14 @@ export default function Dashboard(params) {
                                     <img style={{ width: '12em', height: '10em', marginTop: '1em' }} src={logoProducts} className="card-img-top img-fluid centerImg" alt="" />
                                     <div style={{ textAlign: 'center' }} className="card-body">
                                         <h2 className="card-title superTitulo">Productos</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ marginBottom: '1em' }} className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                                <div onClick={goToppings} className="card border border-primary card-flyer pointer">
+                                    <img style={{ width: '13em', height: '10em', marginTop: '1em' }} src={toppingsLogo} className="card-img-top img-fluid centerImg" alt="" />
+                                    <div style={{ textAlign: 'center' }} className="card-body">
+                                        <h2 className="card-title superTitulo">Toppings</h2>
                                     </div>
                                 </div>
                             </div>

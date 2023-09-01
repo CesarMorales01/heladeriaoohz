@@ -5,10 +5,12 @@ import Swal from 'sweetalert2'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react';
 import SelectClientes from './SelectClientes';
-import SelectProductos from './SelectProductos';
 import ShoppingCart from './ShoppingCart';
 import PrimaryButton from '@/Components/PrimaryButton'
 import '../../../css/general.css'
+import DialogoShoppingCart from './DialogoShoppingCart';
+import ShowProducts from './ShowProducts';
+import AddToppings from './AddToppings';
 
 const NuevaCompra = (params) => {
     const glob = new GlobalFunctions()
@@ -31,9 +33,14 @@ const NuevaCompra = (params) => {
         id: '',
         compra_n: ''
     })
-    const [opcionesPago, setOpcionesPago] = useState([
+    const [opcionesPago] = useState([
         'Efectivo', 'Pago electronico'
     ])
+    const [windowDisplay, setWindowDisplay] = useState(1)
+    const [toppingSelected, setTopppingSelected] = useState([])
+    const [productToTopping, setProductToTopping] = useState({})
+    const [idAutoIncrement, setIdAutoIncrement] = useState(100)
+    const [loadingTops, setLoadingTops] = useState('none')
 
     useEffect(() => {
         if (params.datosCompra.id == '') {
@@ -43,11 +50,12 @@ const NuevaCompra = (params) => {
                 cargarParametros()
             }
         }
+        glob.setCookie('tops', JSON.stringify(params.adiciones), 3600 * 60)
     }, [])
 
     useEffect(() => {
         if (datosCompra.listaProductos.length > 0) {
-            calcularTotales(datosCompra.listaProductos)
+            calcularTotales(datosCompra.listaProductos, toppingSelected)
         }
     }, [datosCompra.medio_de_pago])
 
@@ -58,6 +66,7 @@ const NuevaCompra = (params) => {
                 id: params.datosCompra.listaProductos[i].id,
                 codigo: params.datosCompra.listaProductos[i].codigo,
                 nombre: params.datosCompra.listaProductos[i].producto,
+                descripcion: params.datosCompra.listaProductos[i].descripcion,
                 cantidad: params.datosCompra.listaProductos[i].cantidad,
                 precio: params.datosCompra.listaProductos[i].precio
             }
@@ -88,24 +97,30 @@ const NuevaCompra = (params) => {
         }, 100);
     }
 
-    function calcularTotales(prods) {
-        let totales = {
-            subtotal: 0,
-            costoEnvio: 0,
-            costoMedioPago: 0
-        }
-        // subtotal
-        for (let i = 0; i < prods.length; i++) {
-            totales.subtotal = totales.subtotal + prods[i].cantidad * prods[i].precio
-        }
-        //costo envio
-        totales.costoEnvio = getCostoEnvio(totales.subtotal)
-        totales.costoMedioPago = totalizarModoDepago(totales.subtotal)
+    function calcularTotales(prods, toppings) {
+        //totales venta
+        let totalVenta = 0
+        prods.forEach(element => {
+            element.subtotalProducto = parseInt(element.precio) * parseInt(element.cantidad)
+            const tops = []
+            let subTops = 0
+            toppings.forEach(element1 => {
+                if (element1.fk_producto == element.id) {
+                    element1.subtotalTopping = parseInt(element1.valor) * parseInt(element1.cantidad)
+                    subTops = (subTops + element1.subtotalTopping) * element.cantidad
+                    tops.push(element1)
+                }
+            })
+            element.topping = tops
+            element.subTodo = element.subtotalProducto + subTops
+            totalVenta = totalVenta + element.subTodo
+        })
         setDatosCompra((valores) => ({
             ...valores,
-            domicilio: totales.costoEnvio,
-            total_compra: totales.subtotal,
-            costo_medio_pago: totales.costoMedioPago
+            listaProductos: prods,
+            domicilio: getCostoEnvio(totalVenta),
+            total_compra: totalVenta,
+            costo_medio_pago: totalizarModoDepago(totalVenta)
         }))
     }
 
@@ -192,7 +207,7 @@ const NuevaCompra = (params) => {
             if (datosCompra.id == '') {
                 fetchRegistrarCompra()
             } else {
-                fetchUpdateCompra()
+                //  fetchUpdateCompra()
             }
         }
     }
@@ -257,37 +272,170 @@ const NuevaCompra = (params) => {
         }))
     }
 
-    function getProducto(e) {
-            if (validarInventario(e.target.value)) {
-                return
-            }
-            let nombre = ''
-            let precio = 0
-            for (let i = 0; i < params.productos.length; i++) {
-                if (e.target.value == params.productos[i].id) {
+    const cambioComentarioProducto = (inputId) => {
+        const input = document.getElementById('inputComment' + inputId)
+        reiniciarProductos()
+        setTimeout(() => {
+            const updatedArray = datosCompra.listaProductos.map(p =>
+                p.id === inputId ? { ...p, descripcion: input.value }
+                    : p
+            )
+            calcularTotales(updatedArray, toppingSelected)
+        }, 100);
+    }
 
-                    nombre = params.productos[i].nombre
-                    precio = params.productos[i].valor
+    function getProducto(idProd) {
+        if (validarInventario(idProd)) {
+            return
+        }
+        let nombre = ''
+        let precio = 0
+        for (let i = 0; i < params.productos.length; i++) {
+            if (idProd == params.productos[i].id) {
+                nombre = params.productos[i].nombre
+                precio = params.productos[i].valor
+            }
+        }
+        let objeto = {
+            id: idAutoIncrement,
+            codigo: idProd,
+            nombre: nombre,
+            descripcion: '',
+            cantidad: 1,
+            precio: precio
+        }
+        setIdAutoIncrement(idAutoIncrement + parseInt(1))
+        return objeto
+    }
+
+    function addTopping(e) {
+        setProductToTopping(getProducto(e.target.value))
+    }
+
+    function addToCar(e) {
+        let array = datosCompra.listaProductos
+        array.push(getProducto(e.target.value))
+        reiniciarProductos()
+        calcularTotales(array, toppingSelected)
+    }
+
+    function reiniciarToppings() {
+        let reiniciar = []
+        setTopppingSelected(reiniciar)
+    }
+
+    function validarEnToppigSelected(top) {
+        let topping = {}
+        toppingSelected.forEach(element => {
+            if (element.fk_producto == productToTopping.id) {
+                if (element.nombre == top.nombre) {
+                    topping = element
                 }
             }
-            let array = datosCompra.listaProductos
-            
-            let objeto = {
-                id: parseInt(array.length)+parseInt(1),
-                codigo: e.target.value,
-                nombre: nombre,
-                cantidad: 1,
-                precio: precio
+        })
+        return topping
+    }
+
+    function masCantTopping(top) {
+        setLoadingTops('')
+        const validar = validarEnToppigSelected(top)
+        if (Object.keys(validar).length > 0) {
+            validar.nuevaCantidad = 1
+            fetchActToppingToCar(validar)
+        } else {
+            top.cant = 1
+            let datos = {
+                'top': top,
+                'prod': productToTopping
             }
-            array.push(objeto)
+            if (validarInventario(productToTopping.id)) {
+                return
+            }
+            fetchToppingToCar(datos)
+        }
+    }
+
+    function fetchActToppingToCar(obj) {
+        const url = params.globalVars.myUrl + 'toppingtocar/actualizar?_token=' + params.token
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(obj),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            reiniciarToppings()
+            setTopppingSelected(json)
+            calcularTotales(datosCompra.listaProductos, json)
+            setLoadingTops('none')
+        })
+    }
+
+    function fetchToppingToCar(obj) {
+        const url = params.globalVars.myUrl + 'toppingtocar/save?_token=' + params.token
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(obj),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            reiniciarToppings()
+            setTopppingSelected(json)
+            let array = datosCompra.listaProductos
+            if (array.length == 0) {
+                array.push(productToTopping)
+            } else {
+                let ifExist = null
+                array.forEach(element => {
+                    if (element.id == productToTopping.id) {
+                        ifExist = element
+                    }
+                })
+                if (ifExist == null) {
+                    array.push(productToTopping)
+                }
+            }
             reiniciarProductos()
-            setTimeout(() => {
-                setDatosCompra((valores) => ({
-                    ...valores,
-                    listaProductos: array
-                }))
-                calcularTotales(array)
-            }, 100); 
+            setDatosCompra((valores) => ({
+                ...valores,
+                listaProductos: array
+            }))
+            calcularTotales(array, json)
+            setLoadingTops('none')
+        })
+    }
+
+    function menosCantTopping(top) {
+        setLoadingTops('')
+        const validar = validarEnToppigSelected(top)
+        if (validar.cantidad > 0) {
+            validar.nuevaCantidad = -1
+            fetchActToppingToCar(validar)
+        }
+    }
+
+    function setSuperCantTopping(item) {
+        setLoadingTops('')
+        const validar = validarEnToppigSelected(item.item)
+        if (Object.keys(validar).length > 0) {
+            validar.nuevaCantidad = item.cant
+            fetchActToppingToCar(validar)
+        } else {
+            item.item.cant = item.cant
+            let datos = {
+                'top': item.item,
+                'prod': productToTopping
+            }
+            if (validarInventario(productToTopping.id)) {
+                return
+            }
+            fetchToppingToCar(datos)
+        }
     }
 
     function reiniciarProductos() {
@@ -299,17 +447,32 @@ const NuevaCompra = (params) => {
     }
 
     function borrarProducto(id) {
-        let array = datosCompra.listaProductos
-        reiniciarProductos()
-        setTimeout(() => {
-            const temp = array.filter((art) => art.id !== id);
-            setDatosCompra((valores) => ({
-                ...valores,
-                listaProductos: temp
-            }))
-            // Paso array temp a calcularTotales porque setDatosCompra demora un poco en actualizar....
-            calcularTotales(temp)
-        }, 100);
+        let tops = []
+        if (toppingSelected.length > 0) {
+            const url = params.globalVars.myUrl + 'toppingtocar/' + id
+            fetch(url).then((response) => {
+                return response.json()
+            }).then((json) => {
+                reiniciarToppings()
+                setTopppingSelected(json)
+                tops = json
+            })
+        }
+        const temp = datosCompra.listaProductos.filter((art) => art.id !== id)
+        calcularTotales(temp, tops)
+    }
+
+    function borrarTopping(id) {
+        const url = params.globalVars.myUrl + 'toppingtocar/borrarone/' + id
+        fetch(url).then((response) => {
+            return response.json()
+        }).then((json) => {
+            reiniciarToppings()
+            setTopppingSelected(json)
+            const temp = datosCompra.listaProductos.filter((art) => art.id !== id)
+            calcularTotales(temp, json)
+        })
+
     }
 
     function validarcantidad(id) {
@@ -324,18 +487,13 @@ const NuevaCompra = (params) => {
 
     function menosCant(item) {
         if (validarcantidad(item.codigo) > 1) {
-            const temp = datosCompra.listaProductos
             reiniciarProductos()
             setTimeout(() => {
-                const updatedArray = temp.map(p =>
+                const updatedArray = datosCompra.listaProductos.map(p =>
                     p.id === item.id ? { ...p, cantidad: p.cantidad - 1 }
                         : p
                 )
-                setDatosCompra((valores) => ({
-                    ...valores,
-                    listaProductos: updatedArray
-                }))
-                calcularTotales(updatedArray)
+                calcularTotales(updatedArray, toppingSelected)
             }, 100);
         }
     }
@@ -363,37 +521,27 @@ const NuevaCompra = (params) => {
     }
 
     function masCant(item) {
-            if (validarInventario(item.codigo)) {
-                return
-            }
-            const temp = datosCompra.listaProductos
-            reiniciarProductos()
-            setTimeout(() => {
-                const updatedArray = temp.map(p =>
-                    p.id === item.id ? { ...p, cantidad: parseInt(p.cantidad) + 1 }
-                        : p
-                )
-                setDatosCompra((valores) => ({
-                    ...valores,
-                    listaProductos: updatedArray
-                }))
-                calcularTotales(updatedArray)
-            }, 100);
+        if (validarInventario(item.codigo)) {
+            return
+        }
+        reiniciarProductos()
+        setTimeout(() => {
+            const updatedArray = datosCompra.listaProductos.map(p =>
+                p.id === item.id ? { ...p, cantidad: parseInt(p.cantidad) + 1 }
+                    : p
+            )
+            calcularTotales(updatedArray, toppingSelected)
+        }, 100);
     }
 
     function cambioCant(item) {
-        const temp = datosCompra.listaProductos
         reiniciarProductos()
         setTimeout(() => {
-            const updatedArray = temp.map(p =>
+            const updatedArray = datosCompra.listaProductos.map(p =>
                 p.id === item.id ? { ...p, cantidad: parseInt(item.cantidad) }
                     : p
             )
-            setDatosCompra((valores) => ({
-                ...valores,
-                listaProductos: updatedArray
-            }))
-            calcularTotales(updatedArray)
+            calcularTotales(updatedArray, toppingSelected)
         }, 100);
     }
 
@@ -416,7 +564,7 @@ const NuevaCompra = (params) => {
     }
 
     function cambioRecibido(e) {
-        let cambio = parseInt(e.target.value) - parseInt(datosCompra.total_compra)
+        let cambio = parseInt(e.target.value) - (parseInt(datosCompra.total_compra) + parseInt(datosCompra.domicilio))
         setDatosCompra((valores) => ({
             ...valores,
             dinerorecibido: e.target.value,
@@ -443,7 +591,12 @@ const NuevaCompra = (params) => {
             <Head title="Productos" />
             <div className="container">
                 <a id='goShoppingIndex' style={{ display: 'none' }} href={route('shopping.index')}></a>
-                <div style={{ marginTop: '0.2em' }} className='row justify-content-center'>
+                <div style={{ textAlign: 'center', marginTop: '0.2em', display: windowDisplay == '4' ? 'none' : '' }} className="container">
+                    <button onClick={() => setWindowDisplay('1')} style={{ textTransform: 'uppercase', margin: '0.4em', display: windowDisplay == '1' ? 'none' : '' }} className='btn btn-primary btn-sm'>Seleccionar productos</button>
+                    <button onClick={() => setWindowDisplay('2')} style={{ textTransform: 'uppercase', margin: '0.4em', display: windowDisplay == '2' ? 'none' : '', backgroundColor: '#0ea6ab' }} className='btn btn-primary btn-sm'>Resumen carrito</button>
+                    <PrimaryButton style={{ margin: '0.4em', display: windowDisplay == '3' ? 'none' : '' }} onClick={() => setWindowDisplay('3')} className="btn btn-success" >Revisar compra</PrimaryButton>
+                </div>
+                <div style={{ marginTop: '0.2em', display: windowDisplay == '3' ? '' : 'none' }} className='row justify-content-center'>
                     <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
                         <h6 style={{ marginTop: '0.2em' }}>Fecha de compra:</h6>
                         <input type="date" onChange={cambioFecha} name="fecha" id="inputDate" />
@@ -452,14 +605,11 @@ const NuevaCompra = (params) => {
                         <SelectClientes getCliente={getCliente} clientes={params.clientes}></SelectClientes>
                         <input type="text" style={{ marginTop: '0.2em' }} readOnly id='inputNombre' className="form-control" value={datosCompra.nombreCliente == '' ? '' : datosCompra.nombreCliente} />
                         <textarea style={{ marginTop: '0.4em' }} name='comentario_cliente' placeholder='Comentario cliente...' onChange={cambioComentarioCliente} className="form-control" value={datosCompra.comentario_cliente}></textarea>
-                        <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar productos</p>
-                        <div onMouseOver={validarCliente}>
-                            <SelectProductos obtenerProducto={getProducto} productos={params.productos}></SelectProductos>
-                            <ShoppingCart cambioCant={cambioCant} masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos} productos={params.productos} editando={datosCompra.id}></ShoppingCart>
+                        <div style={{ textAlign: 'center' }} onMouseOver={validarCliente}>
+                            <ShoppingCart productosCarrito={datosCompra.listaProductos} ></ShoppingCart>
                         </div>
                         <textarea name='comentarios' placeholder='Comentarios compra...' onChange={cambioComentario} className="form-control" value={datosCompra.comentarios}></textarea>
                     </div>
-
                     <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
                         <div style={{ textAlign: 'center', marginTop: '0.2em' }} className="border border-success rounded">
                             <h6 style={{ textAlign: 'center', marginTop: '0.4em' }}>Valor total productos</h6>
@@ -494,15 +644,22 @@ const NuevaCompra = (params) => {
                         </div>
                     </div>
                     <div style={{ margin: '1em' }} align='center' className='container'>
-                        <PrimaryButton id='btnIngresarCompra' className='btn btn-success' onClick={validarDatosVacio} type='button'>{datosCompra.id == '' ? 'Ingresar compra' : 'Editar compra'}</PrimaryButton>
+                        <PrimaryButton id='btnIngresarCompra' className='btn btn-success' onClick={validarDatosVacio} disabled={datosCompra.id == '' ? false : true} type='button'>{datosCompra.id == '' ? 'Ingresar compra' : 'Editar compra'}</PrimaryButton>
                         <button id='btnLoading' style={{ display: 'none', backgroundColor: 'gray' }} className="btn btn-primary" type="button" disabled>
                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Loading...
                         </button>
                     </div>
-
                 </div>
-
+                <div style={{ display: windowDisplay == '2' ? '' : 'none' }}>
+                    <DialogoShoppingCart borrarTopping={borrarTopping} setWindowDisplay={setWindowDisplay} cambioComentarioProducto={cambioComentarioProducto} cambioCant={cambioCant} masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos} productos={params.productos} editando={datosCompra.id}></DialogoShoppingCart>
+                </div>
+                <div style={{ display: windowDisplay == '1' ? '' : 'none' }}>
+                    <ShowProducts setWindowDisplay={setWindowDisplay} globalVars={params.globalVars} categorias={params.categorias} productos={params.productos} addToCar={addToCar} addTopping={addTopping}></ShowProducts>
+                </div>
+                <div style={{ display: windowDisplay == '4' ? '' : 'none' }}>
+                    <AddToppings setSuperCantTopping={setSuperCantTopping} loadingTops={loadingTops} menosCantTopping={menosCantTopping} masCantTopping={masCantTopping} globalVars={params.globalVars} adiciones={params.adiciones} toppingSelected={toppingSelected} setWindowDisplay={setWindowDisplay} productToTopping={productToTopping} ></AddToppings>
+                </div>
             </div>
         </AuthenticatedLayout>
     )

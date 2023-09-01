@@ -125,7 +125,7 @@ export default function Login({ status, canResetPassword, globalVars }) {
                             ¿Olvidaste tu contraseña?
                         </Link>
                     )}
-                    <button onClick={goLogin} id='btnLogin' style={{ backgroundColor: globalVars.info.color_pagina == '' ? 'gray' : globalVars.info.color_pagina }} className="ml-4 btn btn-primary" disabled={processing}>
+                    <button onClick={goLogin} id='btnLogin' style={{ backgroundColor: globalVars.info == null ? 'gray' : globalVars.info.color_pagina }} className="ml-4 btn btn-primary" disabled={processing}>
                         Log in
                     </button>
                     <button type='button' id='btnLoginLoading' disabled style={{ backgroundColor: 'gray', display: 'none' }} className="ml-4 btn btn-primary">

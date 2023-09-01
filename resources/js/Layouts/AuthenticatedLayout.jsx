@@ -7,7 +7,7 @@ export default function Authenticated({ user, header, children, globalVars }) {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <nav style={{ backgroundColor: globalVars.info.color_pagina }} >
+            <nav style={{ backgroundColor: globalVars.info == null ? 'gray' : globalVars.info.color_pagina }} >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
                     <div className="flex justify-between h-16">
                         <div className="flex">
@@ -15,9 +15,27 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                 <a className='tamañoLetraNav inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150' href={route('dashboard')} style={{ color: '#fd4cb9', cursor: 'pointer' }} > <i style={{ marginRight: '0.2em' }} className="fas fa-home fa-1x"></i>Home</a>
                             </div>
                             <div className="hidden space-x-8 md:-my-px md:ml-10 md:flex ">
-                                <NavLink href={route('product.index')} active={route().current('product.index')}>
-                                    Productos
-                                </NavLink>
+                                <div className="hidden md:flex md:items-center md:ml-6">
+                                    <div className="ml-3 relative">
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <span className="inline-flex rounded-md">
+                                                    <button  style={{ fontSize: '1.2em' }} type="button" className="inline-flex items-center px-3 py-2 leading-4 font-medium rounded-md text-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150" >
+                                                        Productos
+                                                         <svg className="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" >
+                                                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </Dropdown.Trigger>
+                                            <Dropdown.Content>
+                                                <Dropdown.Link href={route('product.index')}>Productos</Dropdown.Link>
+                                                <Dropdown.Link href={route('category.index')}>Categorias</Dropdown.Link>
+                                                <Dropdown.Link href={route('topping.list', 'nothing')}>Toppings</Dropdown.Link>
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </div>
+                                </div>
                                 <NavLink href={route('shopping.index')} active={route().current('shopping.index')}>
                                     Ventas
                                 </NavLink>
@@ -36,7 +54,6 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                 <NavLink href={route('report.list', 'nothing')} active={route().current('report.list')}>
                                     Informes
                                 </NavLink>
-
                             </div>
                         </div>
 
@@ -168,6 +185,8 @@ export default function Authenticated({ user, header, children, globalVars }) {
                             </Dropdown.Trigger>
 
                             <Dropdown.Content>
+                                <Dropdown.Link href={route('setting.index')}>Configuraciones</Dropdown.Link>
+                                <Dropdown.Link href={route('profile.edit')}>Cuenta</Dropdown.Link>
                                 <Dropdown.Link href={route('logout')} method="post" as="button">
                                     Salir
                                 </Dropdown.Link>

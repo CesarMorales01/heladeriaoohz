@@ -9,43 +9,65 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\GlobalVars;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class PasswordResetLinkController extends Controller
 {
-    /**
-     * Display the password reset link request view.
-     */
+    public $global = null;
+
+    public function __construct()
+    {
+        $this->global = new GlobalVars();
+    }
+
     public function create(): Response
     {
+        $globalVars = $this->global->getGlobalVars();
+        $globalVars->info=DB::table('info_pagina')->first();
         return Inertia::render('Auth/ForgotPassword', [
             'status' => session('status'),
+            'globalVars'=>$globalVars,
+            'message' => '',
+            'email'=>''
         ]);
     }
 
-    /**
-     * Handle an incoming password reset link request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
         ]);
-
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        if ($status == Password::RESET_LINK_SENT) {
+        $validarCorreo = User::where('email', '=', $request->email)->get();
+        if (count($validarCorreo) == 0) {
+            $status = "Correo no encontrado!";
             return back()->with('status', __($status));
+        } else {
+            $newpass=$this->generatepassword();
+            User::where('email', '=', $request->email)->update([
+                'password'=> Hash::make($newpass)
+            ]);
+            $status = "Se ha enviado un correo con la nueva contraseña!";
+            $globalVars = $this->global->getGlobalVars();
+            return Inertia::render('Auth/ForgotPassword', [
+                'status' => $status,
+                'globalVars'=>$globalVars,
+                'message' => $newpass,
+                'email'=>$request->email
+            ]);
         }
+    }
 
-        throw ValidationException::withMessages([
-            'email' => [trans($status)],
-        ]);
+    public function generatepassword()
+    {
+        $key = "";
+        $pattern = "1234567890abcdefghijklmnopqrstuvwxyz";
+        $max = strlen($pattern) - 1;
+        for ($i = 0; $i < 6; $i++) {
+            $key .= substr($pattern, mt_rand(0, $max), 1);
+        }
+        return $key;
     }
 }

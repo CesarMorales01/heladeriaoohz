@@ -10,13 +10,14 @@ export default function Guest({ children, globalVars }) {
 
     function getImgLogo() {
         let img = ''
-        if (globalVars.info.logo == null || globalVars.info.logo=='') {
+        if (globalVars.info == null || globalVars.info=='') {
             img = globalVars.myUrl + 'Images/Config/noPreview.jpg'
         }else{
             img = globalVars.myUrl + 'Images/Products/'+ globalVars.info.logo
         }
         document.getElementById('logo').src = img
     }
+    
     return (
         <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <div className=" sm:max-w-md mt-6 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg" >

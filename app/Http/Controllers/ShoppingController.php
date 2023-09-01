@@ -25,7 +25,7 @@ class ShoppingController extends Controller
     {
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
-        $globalVars->info=DB::table('info_pagina')->first();
+        $globalVars->info = DB::table('info_pagina')->first();
         $compras = DB::table('lista_compras')->orderBy('id', 'desc')->paginate(100);
         foreach ($compras as $compra) {
             // Validar si la compra pertenece a un cliente registrado... si no mandar id
@@ -52,12 +52,43 @@ class ShoppingController extends Controller
         $clientes = $this->all_clientes();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
-        $globalVars->info=DB::table('info_pagina')->first();
+        $globalVars->info = DB::table('info_pagina')->first();
         $productos = $this->all_products();
+        foreach ($productos as $p) {
+            $img = DB::table('imagenes_productos')->where('fk_producto', '=', $p->id)->first();
+            if ($img != null) {
+                $p->imagen = $img->nombre_imagen;
+            } else {
+                $p->imagen = '';
+            }
+        }
         $token = csrf_token();
         $datosCompra = new stdClass();
         $datosCompra->id = '';
-        return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra'));
+        $categorias = DB::table('categorias')->get();
+        $adiciones = DB::table('toppings')->get();
+        DB::table('cartotoppings')->delete();
+        return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra', 'categorias', 'adiciones'));
+    }
+
+    public function printList($id)
+    {
+        //Imprimir pedido para cocina..
+        $datosCompra = DB::table('lista_compras')->where('id', '=', $id)->first();
+        $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $id)->get();
+        foreach ($listaProductos as $list) {
+            $tops = DB::table('lista_toppings_comprados')->where('fk_compra', '=', $id)->where('fk_producto', '=', $list->codigoProductoCarrito)->get();
+            if ($tops) {
+                $list->tops = $tops;
+            }
+        }
+        $datosCompra->listaProductos = $listaProductos;
+        if ($datosCompra->cliente != '') {
+            $cliente = DB::table('clientes')->where('cedula', '=', $datosCompra->cliente)->first();
+            $datosCompra->cliente = $cliente;
+        }
+        $globalVars = $this->global->getGlobalVars();
+        return Inertia::render('Shopping/PrintListProducts', compact('globalVars', 'datosCompra'));
     }
 
     public function save(Request $request)
@@ -77,7 +108,7 @@ class ShoppingController extends Controller
             'medio_de_pago' => $datos->medio_de_pago,
             'costo_medio_pago' => $datos->costo_medio_pago,
             'comentarios' => $datos->comentarios,
-            'dinerorecibido'=>$datos->dinerorecibido,
+            'dinerorecibido' => $datos->dinerorecibido,
             'cambio' => $datos->cambio,
             'estado' => 'Recibida',
             'vendedor' => Auth()->user()->name
@@ -89,11 +120,24 @@ class ShoppingController extends Controller
                 'fk_compra' => $id,
                 'compra_n' => $compra_n,
                 'codigo' => $datos->listaProductos[$i]->codigo,
+                'codigoProductoCarrito' => $datos->listaProductos[$i]->id,
                 'producto' => $datos->listaProductos[$i]->nombre,
+                'descripcion' => $datos->listaProductos[$i]->descripcion,
                 'cantidad' => $datos->listaProductos[$i]->cantidad,
                 'precio' => $datos->listaProductos[$i]->precio
             ]);
             $this->restarInventario($datos->listaProductos[$i]);
+            if ($datos->listaProductos[$i]->topping) {
+                foreach ($datos->listaProductos[$i]->topping as $top) {
+                    DB::table('lista_toppings_comprados')->insert([
+                        'fk_compra' => $id,
+                        'fk_producto' => $datos->listaProductos[$i]->id,
+                        'nombre' => $top->nombre,
+                        'valor' => $top->valor,
+                        'cantidad' => $top->cantidad
+                    ]);
+                }
+            }
         }
         return response()->json('ok', 200, []);
     }
@@ -110,8 +154,8 @@ class ShoppingController extends Controller
             'medio_de_pago' => $datos->medio_de_pago,
             'costo_medio_pago' => $datos->costo_medio_pago,
             'comentarios' => $datos->comentarios,
-            'dinerorecibido'=>$datos->dinerorecibido,
-            'cambio'=>$datos->cambio,
+            'dinerorecibido' => $datos->dinerorecibido,
+            'cambio' => $datos->cambio,
             'estado' => 'Recibida'
         ]);
         $nums = count($datos->listaProductos);
@@ -126,6 +170,7 @@ class ShoppingController extends Controller
                 'compra_n' => $datos->compra_n,
                 'codigo' => $datos->listaProductos[$i]->codigo,
                 'producto' => $datos->listaProductos[$i]->nombre,
+                'descripcion' => $datos->listaProductos[$i]->descripcion,
                 'cantidad' => $datos->listaProductos[$i]->cantidad,
                 'precio' => $datos->listaProductos[$i]->precio
             ]);
@@ -173,9 +218,10 @@ class ShoppingController extends Controller
         }
         DB::table('lista_productos_comprados')->where('fk_compra', '=', $request->idCompra)->delete();
         DB::table('lista_compras')->where('id', '=', $request->idCompra)->delete();
+        DB::table('lista_toppings_comprados')->where('fk_compra', '=', $request->idCompra)->delete();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
-        $globalVars->info=DB::table('info_pagina')->first();
+        $globalVars->info = DB::table('info_pagina')->first();
         $compras = DB::table('lista_compras')->orderBy('id', 'desc')->paginate(100);
         foreach ($compras as $compra) {
             if ($compra->cliente != '') {
@@ -201,36 +247,46 @@ class ShoppingController extends Controller
         $datosCompra = DB::table('lista_compras')->where('id', '=', $id)->first();
         $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $id)->get();
         $totalFactura = 0;
+        $listaProds = [];
         foreach ($listaProductos as $item) {
             $subtotal = $item->precio * $item->cantidad;
             $item->subtotal = $subtotal;
-            $totalFactura = $totalFactura + $subtotal;
+            $tops = DB::table('lista_toppings_comprados')->where('fk_compra', '=', $id)->where('fk_producto', '=', $item->codigoProductoCarrito)->get();
+            $totalTops=0;
+            if ($tops) {
+                foreach ($tops as $top) {
+                    $subTop=$top->valor * $top->cantidad;
+                    $top->subtotal=$subTop;
+                    $totalTops=($totalTops+$subTop);
+                }
+                $item->tops = $tops;
+            }
+            $totalFactura = ($totalFactura + $subtotal)+(intval($totalTops)*$item->cantidad);
         }
         $datosCompra->totalFactura = $totalFactura;
         $datosCompra->listaProductos = $listaProductos;
         if ($datosCompra->cliente != '') {
             $cliente = DB::table('clientes')->where('cedula', '=', $datosCompra->cliente)->first();
             $ciudad = DB::table('municipios')->where('id', '=', $cliente->ciudad)->first();
-            if($ciudad==null){
-                $ciudad='';
+            if ($ciudad == null) {
+                $ciudad = '';
                 $cliente->nombreCiudad = $ciudad;
-            }else{
+            } else {
                 $cliente->nombreCiudad = $ciudad->nombre;
             }
             $telefono = DB::table('telefonos_clientes')->where('cedula', '=', $cliente->cedula)->first();
-            if($telefono==null){
-                $telefono='';
+            if ($telefono == null) {
+                $telefono = '';
                 $cliente->telefono = $telefono;
-            }else{
+            } else {
                 $cliente->telefono = $telefono->telefono;
             }
-            
             $datosCompra->cliente = $cliente;
         }
         $data[] = $datosCompra;
         $pdf = App::make('dompdf.wrapper');
         $pdf = Pdf::loadView('Factura', compact('data'));
-        return $pdf->stream('Factura-'.$datosCompra->id);
+        return $pdf->stream('Factura-' . $datosCompra->id);
     }
 
     public function setSubtotal($item)
@@ -245,7 +301,7 @@ class ShoppingController extends Controller
         $clientes = $this->all_clientes();
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
-        $globalVars->info=DB::table('info_pagina')->first();
+        $globalVars->info = DB::table('info_pagina')->first();
         $productos = $this->all_products();
         $token = csrf_token();
         $datosCompra = DB::table('lista_compras')->where('id', '=', $id)->first();
@@ -294,6 +350,12 @@ class ShoppingController extends Controller
     public function getProductosComprados(string $id)
     {
         $compras = DB::table('lista_productos_comprados')->where('fk_compra', '=', $id)->get();
+        foreach ($compras as $compra) {
+            $tops = DB::table('lista_toppings_comprados')->where('fk_compra', '=', $id)->where('fk_producto', '=', $compra->codigoProductoCarrito)->get();
+            if ($tops) {
+                $compra->tops = $tops;
+            }
+        }
         return response()->json($compras, 200, []);
     }
 

@@ -53,7 +53,7 @@ const ListaCompras = (params) => {
                 if (lista[i].cliente.nombre.toString().toLowerCase().includes(buscar) || lista[i].cliente.cedula.toString().toLowerCase().includes(buscar)) {
                     newArray.push(lista[i])
                     if (lista[i].cliente.apellido) {
-                        console.log('buscar apellido')
+                      //  console.log('buscar apellido')
                     }
                 }
             }

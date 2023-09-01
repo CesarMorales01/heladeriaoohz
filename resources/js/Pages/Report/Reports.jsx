@@ -9,6 +9,7 @@ import GlobalFunctions from '../services/GlobalFunctions'
 import Swal from 'sweetalert2'
 import TopVentasValores from './TopVentasValores';
 import TopClientesValores from './TopClientesValores';
+import CopyRight from '../UIGeneral/CopyRight';
 
 const Reports = (params) => {
 
@@ -422,6 +423,7 @@ const Reports = (params) => {
                                     </div>
                                 </div>
                             </div>
+                            <CopyRight globalVars={params.globalVars}></CopyRight>
                             <button type="button" id='btnDialogoTopVentasValores' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoTopVentasValores"></button>
                             <TopVentasValores productos={productosMasVendidos} optionSelected={optionSelected}></TopVentasValores>
                             <button type="button" id='btnDialogoTopClientes' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoTopClientes"></button>

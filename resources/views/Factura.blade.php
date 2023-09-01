@@ -98,12 +98,25 @@
             </thead>
             <tbody>
                 @foreach ($data[0]->listaProductos as $item)
-                    <tr>
-                        <td>{{ $item->producto }}</td>
-                        <td>{{ $item->cantidad }}</td>
-                        <td>$ {{ number_format($item->precio, 0, ',', '.') }}</td>
-                        <td>$ {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <td>{{ $item->producto }}</td>
+                            <td>{{ $item->cantidad }}</td>
+                            <td>$ {{ number_format($item->precio, 0, ',', '.') }}</td>
+                            <td>$ {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                        </tr>
+                        @if ($item->tops)
+                            @foreach ($item->tops as $top)
+                                <tr>
+                                    <td>{{ $top->nombre }}</td>
+                                    <td>{{ $top->cantidad }}</td>
+                                    <td>$ {{ number_format($top->valor, 0, ',', '.') }}</td>
+                                    <td>$ {{ number_format($top->subtotal, 0, ',', '.') }}</td>
+                                    <td>(x {{ $item->cantidad }})</td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    </thead>
                 @endforeach
             </tbody>
         </table>

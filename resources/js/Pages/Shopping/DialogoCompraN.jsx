@@ -7,7 +7,6 @@ import PrimaryButton from '@/Components/PrimaryButton'
 const DialogoCompraN = (params) => {
     const glob = new GlobalFunctions()
     const [lista, setLista] = useState([])
-    const [cliente, setCliente] = useState(0)
     const [compran, setCompran] = useState(0)
     const [idCompra, setIdCompra] = useState(0)
 
@@ -17,7 +16,6 @@ const DialogoCompraN = (params) => {
                 const array = []
                 setIdCompra(params.datos.id)
                 setLista(array)
-                setCliente(params.datos.cliente.cedula)
                 setCompran(params.datos.compra_n)
             }
         }
@@ -33,20 +31,17 @@ const DialogoCompraN = (params) => {
             return response.json()
         }).then((json) => {
             setLista(json)
-            setTimeout(() => {
-                setTotal()
-            }, 200);
         })
     }
 
-    function setTotal() {
-        let total = 0
-        if (lista.length > 0) {
-            lista.map((item) => {
-                let subtotal = parseInt(item.precio * item.cantidad)
-                total = total + subtotal
+    function totalItem(item) {
+        let total = parseInt(item.precio * item.cantidad)
+            let subtop = 0
+            item.tops.forEach(element => {
+                let subT = parseInt(element.valor * element.cantidad)
+                subtop=subtop+subT
             })
-        }
+            total = total + (subtop * item.cantidad)
         return total
     }
 
@@ -58,44 +53,59 @@ const DialogoCompraN = (params) => {
                         <h5 className="modal-title" id="exampleModalLabel">{compran == 0 ? '' : 'Lista productos compra N°: ' + params.datos.compra_n + '. ' + params.datos.cliente.nombre}</h5>
                     </div>
                     <div className="modal-body">
-                        <div className='container table-responsive'>
+                        <div style={{ marginTop: '0.2em' }} className="table-responsive">
                             <table className="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Producto</th>
-                                        <th scope="col">Cantidad</th>
-                                        <th scope="col">Precio Unidad</th>
+                                        <th colSpan='2'>Producto</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Cant</th>
                                         <th scope="col">Subtotal</th>
+                                        <th scope="col"></th>
                                     </tr>
                                 </thead>
-                                <tbody >
-                                    <tr style={{ display: lista.length == 0 ? '' : 'none' }}>
-                                        <td>
-                                            <div className='container'>
-                                                <div style={{ textAlign: 'center', margin: '1em' }} className="spinner-border text-primary" role="status">
-                                                    <span className="sr-only">Loading...</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {lista.map((item, index) => {
-                                        const subt = parseInt(item.precio * item.cantidad)
-                                        return (
-                                            <tr scope="row" key={index}>
-                                                <th>{item.producto}</th>
-                                                <td>{item.cantidad}</td>
-                                                <td>{glob.formatNumber(item.precio)}</td>
-                                                <td>{glob.formatNumber(subt)}</td>
+                                {lista.map((item, index) => {
+                                    return (
+                                        <thead key={index}>
+                                            <tr className='align-middle'  >
+                                                <td colSpan='2'>{item.producto}</td>
+                                                <td>${glob.formatNumber(item.precio)}</td>
+                                                <td>
+                                                    {item.cantidad}
+                                                </td>
+                                                <td>${glob.formatNumber(parseInt(item.precio) * parseInt(item.cantidad))}</td>
+                                                <td></td>
                                             </tr>
-                                        )
-                                    })}
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th>Total compra:</th>
-                                        <th id='thTotal'>{glob.formatNumber(setTotal())}</th>
-                                    </tr>
-                                </tbody>
+                                            <tr style={{ display: item.tops.length > 0 ? '' : 'none', fontSize: '14px', color: 'green' }}>
+                                                <th scope="col"></th>
+                                                <th scope="col">Topping</th>
+                                                <th scope="col">Valor</th>
+                                                <th scope="col">Cant</th>
+                                                <th scope="col">Subtotal</th>
+                                            </tr>
+                                            {item.tops ?
+                                                item.tops.map((top, index) => {
+                                                    return (
+                                                        <tr style={{ fontSize: '14px', color: 'green' }} key={index}>
+                                                            <td></td>
+                                                            <td>{top.nombre}</td>
+                                                            <td>$ {glob.formatNumber(top.valor)}</td>
+                                                            <td>{top.cantidad}</td>
+                                                            <td>$ {glob.formatNumber(parseInt(top.valor) * parseInt(top.cantidad))}</td>
+                                                        </tr>
+                                                    )
+                                                })
+                                                :
+                                                ''
+                                            }
+                                            <tr style={{ display: item.tops.length > 0 ? '' : 'none' }}>
+                                                <th></th>
+                                                <th colSpan='2'>Total producto + toppings</th>
+                                                <td >$ {glob.formatNumber(totalItem(item))}</td>
+                                            </tr>
+                                        </thead>
+                                    )
+                                })}
                             </table>
                         </div>
                     </div>

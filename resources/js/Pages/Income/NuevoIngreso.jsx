@@ -31,7 +31,7 @@ const NuevoIngreso = (params) => {
     }, [])
 
     function validar() {
-        if (ingreso.valor != '') {
+        if (ingreso.valor != '' && ingreso.categoria!='') {
             loadingOn()
             document.getElementById('formCrear').submit()
         } else {
@@ -41,7 +41,7 @@ const NuevoIngreso = (params) => {
 
     function sweetAlert() {
         Swal.fire({
-            title: 'Ingresa un valor!',
+            title: 'Ingresa categoria y/o valor!',
             icon: 'warning',
             timer: 1500,
         })
