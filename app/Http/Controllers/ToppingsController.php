@@ -24,12 +24,17 @@ class ToppingsController extends Controller
         $globalVars = $this->global->getGlobalVars();
         $globalVars->info=DB::table('info_pagina')->first();
         $toppings=DB::table('toppings')->get();
+        foreach($toppings as $top){
+            $cate=DB::table('categorias_toppings')->where('id', '=', $top->categoria)->first();
+            $top->categoria=$cate->nombre;
+        }
         $token = csrf_token();
         $estado='';
         if($state!='nothing'){
             $estado=$state;
         }
-        return Inertia::render('Topping/Toppings', compact('auth', 'toppings', 'globalVars', 'estado', 'token'));
+        $categorias=DB::table('categorias_toppings')->get();
+        return Inertia::render('Topping/Toppings', compact('auth', 'toppings', 'globalVars', 'estado', 'token', 'categorias'));
     }
     
     public function index()
@@ -53,6 +58,7 @@ class ToppingsController extends Controller
         }
         DB::table('toppings')->insert([
             'nombre' => $request->nombre,
+            'categoria'=>$request->categoria,
             'descripcion' => $request->descripcion,
             'valor' => $request->valor,
             'imagen' => $fileName
@@ -81,6 +87,7 @@ class ToppingsController extends Controller
             }
             DB::table('toppings')->where('id', '=', $id)->update([
                 'nombre' => $request->nombre,
+                'categoria'=>$request->categoria,
                 'descripcion' => $request->descripcion,
                 'valor' => $request->valor,
                 'imagen' => $fileName
@@ -88,11 +95,11 @@ class ToppingsController extends Controller
         }else{
             DB::table('toppings')->where('id', '=', $id)->update([
                 'nombre' => $request->nombre,
+                'categoria'=>$request->categoria,
                 'descripcion' => $request->descripcion,
                 'valor' => $request->valor
             ]);
         }
-       
         return redirect()->route('topping.list', '¡Topping actualizado!');
     }
 

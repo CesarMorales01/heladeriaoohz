@@ -658,7 +658,7 @@ const NuevaCompra = (params) => {
                     <ShowProducts setWindowDisplay={setWindowDisplay} globalVars={params.globalVars} categorias={params.categorias} productos={params.productos} addToCar={addToCar} addTopping={addTopping}></ShowProducts>
                 </div>
                 <div style={{ display: windowDisplay == '4' ? '' : 'none' }}>
-                    <AddToppings setSuperCantTopping={setSuperCantTopping} loadingTops={loadingTops} menosCantTopping={menosCantTopping} masCantTopping={masCantTopping} globalVars={params.globalVars} adiciones={params.adiciones} toppingSelected={toppingSelected} setWindowDisplay={setWindowDisplay} productToTopping={productToTopping} ></AddToppings>
+                    <AddToppings categorias={params.categoriasAdiciones} setSuperCantTopping={setSuperCantTopping} loadingTops={loadingTops} menosCantTopping={menosCantTopping} masCantTopping={masCantTopping} globalVars={params.globalVars} adiciones={params.adiciones} toppingSelected={toppingSelected} setWindowDisplay={setWindowDisplay} productToTopping={productToTopping} ></AddToppings>
                 </div>
             </div>
         </AuthenticatedLayout>

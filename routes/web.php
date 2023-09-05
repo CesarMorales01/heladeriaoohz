@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CateGastosController;
+use App\Http\Controllers\CategoriasToppigController;
 use App\Http\Controllers\CategoriesProvidersController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CateIngresosController;
@@ -64,10 +65,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('/setting', SettingController::class);
     Route::resource('/topping', ToppingsController::class);
     Route::get('/topping/list/{state?}', [ToppingsController::class, 'listar'])->name('topping.list');
+    Route::post('/topping/actualizar/{id}', [ToppingsController::class, 'actualizar'])->name('topping.actualizar');
     Route::post('/toppingtocar/save', [ToppingsToCarController::class, 'save']);
     Route::post('/toppingtocar/actualizar', [ToppingsToCarController::class, 'actualizar']);
     Route::get('/toppingtocar/{fk_prod}', [ToppingsToCarController::class, 'borrar']);
     Route::get('/toppingtocar/borrarone/{fk_prod}', [ToppingsToCarController::class, 'borrarOne']);
+    Route::get('/catetopping/list/{state?}', [CategoriasToppigController::class, 'listar'])->name('catetopping.list');
+    Route::resource('/catetopping', CategoriasToppigController::class);
 });
 
 

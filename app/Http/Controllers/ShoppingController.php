@@ -67,8 +67,9 @@ class ShoppingController extends Controller
         $datosCompra->id = '';
         $categorias = DB::table('categorias')->get();
         $adiciones = DB::table('toppings')->get();
+        $categoriasAdiciones=DB::table('categorias_toppings')->get();
         DB::table('cartotoppings')->delete();
-        return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra', 'categorias', 'adiciones'));
+        return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra', 'categorias', 'adiciones', 'categoriasAdiciones'));
     }
 
     public function printList($id)

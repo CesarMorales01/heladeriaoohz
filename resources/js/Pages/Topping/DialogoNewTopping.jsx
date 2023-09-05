@@ -9,6 +9,7 @@ const DialogoNewTopping = (params) => {
     const glob = new GlobalFunctions()
     const [topping, setTopping] = useState({
         id: '',
+        categoria: '',
         nombre: '',
         descripcion: '',
         imagen: '',
@@ -27,6 +28,13 @@ const DialogoNewTopping = (params) => {
             icon: 'warning',
             timer: 1000
         })
+    }
+
+    function cambioCate(cate) {
+        setTopping((valores) => ({
+            ...valores,
+            categoria: cate.target.value,
+        }))
     }
 
     function cambioNombre(cate) {
@@ -126,6 +134,15 @@ const DialogoNewTopping = (params) => {
                             <input type="hidden" name='id' value={params.topping.id == '' ? '' : params.topping.id} />
                             <input type="hidden" name='nombreImagenAnterior' value={params.topping.id == '' ? '' : params.topping.imagen} />
                             <input name='nombre' onChange={cambioNombre} className='form-control rounded' type="text" placeholder='Nombre topping' value={topping.nombre == '' ? '' : topping.nombre} />
+                            <br />
+                            Categoria:
+                            <select onChange={cambioCate} name='categoria' className="form-select rounded" >
+                                {params.categorias.map((item, index) => {
+                                    return (
+                                        <option selected={params.topping.categoria === item.nombre} key={index} value={item.id} >{item.nombre}</option>
+                                    )
+                                })}
+                            </select>
                             <br />
                             Descripción
                             <br />

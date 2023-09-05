@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import '../../../css/general.css'
 import { useState, useEffect } from 'react';
 import newLogo from '../../../../public/Images/Config/plus.png'
-import logoProducts from '../../../../public/Images/Config/products.jpg'
+import logotop from '../../../../public/Images/Config/catetopping.jpg'
 import Progressbar from '../UIGeneral/ProgressBar'
 import DialogoNewTopping from './DialogoNewTopping';
 import GlobalFunctions from '../services/GlobalFunctions'
@@ -14,6 +14,7 @@ const Toppings = (params) => {
     const glob = new GlobalFunctions()
     const [topping, setTopping] = useState({
         id: '',
+        categoria: '',
         nombre: '',
         descripcion: '',
         imagen: '',
@@ -37,6 +38,7 @@ const Toppings = (params) => {
     function abrirDialogo(item) {
         setTopping({
             id: item.id,
+            categoria: item.categoria,
             nombre: item.nombre,
             descripcion: item.descripcion,
             imagen: item.imagen,
@@ -45,9 +47,9 @@ const Toppings = (params) => {
         document.getElementById('btnDialogoNewTopping').click()
     }
 
-    function goProducts() {
+    function goCateToppings() {
         setProgressBar(true)
-        window.location = params.globalVars.myUrl + "product"
+        window.location = params.globalVars.myUrl + "catetopping/list/nothing"
     }
 
     return (
@@ -66,9 +68,9 @@ const Toppings = (params) => {
                             </div>
                         </div>
                         <div className="col-lg-6 col-md-6 col-sm-6 col-6" >
-                            <div onClick={goProducts} className="card border border-primary card-flyer pointer">
-                                <img style={{ width: '4em', height: '4em', marginTop: '1em' }} src={logoProducts} className="card-img-top img-fluid centerImg" alt="" />
-                                <h2 style={{ marginTop: '0.2em' }} className="card-title titulo">Productos</h2>
+                            <div onClick={goCateToppings} className="card border border-primary card-flyer pointer">
+                                <img style={{ width: '4em', height: '4em', marginTop: '1em' }} src={logotop} className="card-img-top img-fluid centerImg" alt="" />
+                                <h2 style={{ marginTop: '0.2em', fontSize: '17px', color: 'black', fontWeight: 'bold' }} className="card-title">Categorias toppings</h2>
                             </div>
                         </div>
                     </div>
@@ -79,7 +81,7 @@ const Toppings = (params) => {
                         <tr>
                             <th scope="col">Id</th>
                             <th scope="col">Topping</th>
-                            <th scope="col">Descripcion</th>
+                            <th scope="col">Categoria</th>
                             <th scope="col">Valor</th>
                             <th scope="col">Imagen</th>
                         </tr>
@@ -99,7 +101,7 @@ const Toppings = (params) => {
                                         </a>
                                     </th>
                                     <td>{item.nombre}</td>
-                                    <td>{item.descripcion}</td>
+                                    <td>{item.categoria}</td>
                                     <td>$ {glob.formatNumber(item.valor)}</td>
                                     <td>
                                         <img className='img-fluid rounded' style={{ width: '6em', heigth: '6em' }} src={item.imagen=='' ? params.globalVars.myUrl+'Images/Config/noPreview.jpg' : params.globalVars.urlImagenesCategorias + item.imagen} />
@@ -111,7 +113,7 @@ const Toppings = (params) => {
                 </table>
             </div>
             <button id='btnDialogoNewTopping' data-toggle="modal" data-target="#dialogoNuevoTopping" style={{ display: 'none' }} ></button>
-            <DialogoNewTopping  token={params.token} globalVars={params.globalVars} topping={topping} ></DialogoNewTopping>            
+            <DialogoNewTopping categorias={params.categorias} token={params.token} globalVars={params.globalVars} topping={topping} ></DialogoNewTopping>            
         </AuthenticatedLayout>
     )
 }
