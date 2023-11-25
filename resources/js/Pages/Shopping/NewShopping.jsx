@@ -11,6 +11,7 @@ import '../../../css/general.css'
 import DialogoShoppingCart from './DialogoShoppingCart';
 import ShowProducts from './ShowProducts';
 import AddToppings from './AddToppings';
+import DialogoLoading from '../UIGeneral/DialogoLoading';
 
 const NuevaCompra = (params) => {
     const glob = new GlobalFunctions()
@@ -101,19 +102,19 @@ const NuevaCompra = (params) => {
         //totales venta
         let totalVenta = 0
         prods.forEach(element => {
-            element.subtotalProducto = parseInt(element.precio) * parseInt(element.cantidad)
+            element.subtotalProducto = redondear(parseInt(element.precio) * parseInt(element.cantidad))
             const tops = []
             let subTops = 0
             toppings.forEach(element1 => {
                 if (element1.fk_producto == element.id) {
-                    element1.subtotalTopping = parseInt(element1.valor) * parseInt(element1.cantidad)
-                    subTops = (subTops + element1.subtotalTopping) * element.cantidad
+                    element1.subtotalTopping = redondear(parseInt(element1.valor) * parseInt(element1.cantidad))
+                    subTops = redondear((subTops + element1.subtotalTopping) * element.cantidad)
                     tops.push(element1)
                 }
             })
             element.topping = tops
-            element.subTodo = element.subtotalProducto + subTops
-            totalVenta = totalVenta + element.subTodo
+            element.subTodo = redondear(element.subtotalProducto + subTops)
+            totalVenta = redondear(totalVenta + element.subTodo)
         })
         setDatosCompra((valores) => ({
             ...valores,
@@ -122,6 +123,10 @@ const NuevaCompra = (params) => {
             total_compra: totalVenta,
             costo_medio_pago: totalizarModoDepago(totalVenta)
         }))
+    }
+
+    function redondear(num) {
+        return Math.round(num / 100) * 100;
     }
 
     function totalizarModoDepago(subtotal) {
@@ -312,6 +317,11 @@ const NuevaCompra = (params) => {
         setProductToTopping(getProducto(e.target.value))
     }
 
+    function addExtraTopping(item) {
+        setProductToTopping(item)
+        setWindowDisplay('4')
+    }
+
     function addToCar(e) {
         let array = datosCompra.listaProductos
         array.push(getProducto(e.target.value))
@@ -356,6 +366,7 @@ const NuevaCompra = (params) => {
     }
 
     function fetchActToppingToCar(obj) {
+      //  document.getElementById('btnModalLoading').click()
         const url = params.globalVars.myUrl + 'toppingtocar/actualizar?_token=' + params.token
         fetch(url, {
             method: 'POST',
@@ -370,10 +381,12 @@ const NuevaCompra = (params) => {
             setTopppingSelected(json)
             calcularTotales(datosCompra.listaProductos, json)
             setLoadingTops('none')
+          //  document.getElementById('btnCloseModalLoading').click()
         })
     }
 
     function fetchToppingToCar(obj) {
+      //  document.getElementById('btnModalLoading').click()
         const url = params.globalVars.myUrl + 'toppingtocar/save?_token=' + params.token
         fetch(url, {
             method: 'POST',
@@ -407,13 +420,14 @@ const NuevaCompra = (params) => {
             }))
             calcularTotales(array, json)
             setLoadingTops('none')
+           // document.getElementById('btnCloseModalLoading').click()
         })
     }
 
     function menosCantTopping(top) {
-        setLoadingTops('')
         const validar = validarEnToppigSelected(top)
         if (validar.cantidad > 0) {
+            setLoadingTops('')
             validar.nuevaCantidad = -1
             fetchActToppingToCar(validar)
         }
@@ -486,14 +500,17 @@ const NuevaCompra = (params) => {
     }
 
     function menosCant(item) {
+        console.log(item)
         if (validarcantidad(item.codigo) > 1) {
             reiniciarProductos()
             setTimeout(() => {
-                const updatedArray = datosCompra.listaProductos.map(p =>
-                    p.id === item.id ? { ...p, cantidad: p.cantidad - 1 }
-                        : p
-                )
-                calcularTotales(updatedArray, toppingSelected)
+                datosCompra.listaProductos.forEach(element => {
+                    console.log(element)
+                    if(element.id==item.id){
+                        element.cantidad=element.cantidad-1
+                    }
+                });
+                calcularTotales(datosCompra.listaProductos, toppingSelected)
             }, 100);
         }
     }
@@ -537,11 +554,17 @@ const NuevaCompra = (params) => {
     function cambioCant(item) {
         reiniciarProductos()
         setTimeout(() => {
-            const updatedArray = datosCompra.listaProductos.map(p =>
-                p.id === item.id ? { ...p, cantidad: parseInt(item.cantidad) }
-                    : p
-            )
-            calcularTotales(updatedArray, toppingSelected)
+            datosCompra.listaProductos.forEach(element => {
+                if(element.id==item.id){
+                    if(element.nombre=='Maxi Cono'){
+                        console.log(element.cantidad)
+                        element.cantidad=parseInt(item.cantidad)-47
+                    }else{
+                        element.cantidad=parseInt(item.cantidad)
+                    } 
+                }
+            });
+            calcularTotales(datosCompra.listaProductos, toppingSelected)
         }, 100);
     }
 
@@ -604,7 +627,7 @@ const NuevaCompra = (params) => {
                         <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar cliente (Opcional)</p>
                         <SelectClientes getCliente={getCliente} clientes={params.clientes}></SelectClientes>
                         <input type="text" style={{ marginTop: '0.2em' }} readOnly id='inputNombre' className="form-control" value={datosCompra.nombreCliente == '' ? '' : datosCompra.nombreCliente} />
-                        <textarea style={{ marginTop: '0.4em' }} name='comentario_cliente' placeholder='Comentario cliente...' onChange={cambioComentarioCliente} className="form-control" value={datosCompra.comentario_cliente}></textarea>
+                        <textarea style={{ marginTop: '0.4em', display: 'none' }} name='comentario_cliente' placeholder='Comentario cliente...' onChange={cambioComentarioCliente} className="form-control" value={datosCompra.comentario_cliente}></textarea>
                         <div style={{ textAlign: 'center' }} onMouseOver={validarCliente}>
                             <ShoppingCart productosCarrito={datosCompra.listaProductos} ></ShoppingCart>
                         </div>
@@ -652,7 +675,7 @@ const NuevaCompra = (params) => {
                     </div>
                 </div>
                 <div style={{ display: windowDisplay == '2' ? '' : 'none' }}>
-                    <DialogoShoppingCart borrarTopping={borrarTopping} setWindowDisplay={setWindowDisplay} cambioComentarioProducto={cambioComentarioProducto} cambioCant={cambioCant} masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos} productos={params.productos} editando={datosCompra.id}></DialogoShoppingCart>
+                    <DialogoShoppingCart addExtraTopping={addExtraTopping} borrarTopping={borrarTopping} setWindowDisplay={setWindowDisplay} cambioComentarioProducto={cambioComentarioProducto} cambioCant={cambioCant} masCant={masCant} menosCant={menosCant} borrarProducto={borrarProducto} productosCarrito={datosCompra.listaProductos} productos={params.productos} editando={datosCompra.id}></DialogoShoppingCart>
                 </div>
                 <div style={{ display: windowDisplay == '1' ? '' : 'none' }}>
                     <ShowProducts setWindowDisplay={setWindowDisplay} globalVars={params.globalVars} categorias={params.categorias} productos={params.productos} addToCar={addToCar} addTopping={addTopping}></ShowProducts>
@@ -661,6 +684,7 @@ const NuevaCompra = (params) => {
                     <AddToppings categorias={params.categoriasAdiciones} setSuperCantTopping={setSuperCantTopping} loadingTops={loadingTops} menosCantTopping={menosCantTopping} masCantTopping={masCantTopping} globalVars={params.globalVars} adiciones={params.adiciones} toppingSelected={toppingSelected} setWindowDisplay={setWindowDisplay} productToTopping={productToTopping} ></AddToppings>
                 </div>
             </div>
+            <DialogoLoading url={params.globalVars.myUrl}></DialogoLoading>
         </AuthenticatedLayout>
     )
 }

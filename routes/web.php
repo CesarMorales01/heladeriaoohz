@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/product/image/{id}', [ProductController::class, 'image'])->name('product.image');
     Route::get('/product/actualizar/{id}', [ProductController::class, 'actualizar'])->name('product.actualizar');
     Route::resource('/shopping', ShoppingController::class);
+    Route::get('/getVentasByDate/{finicial}/{ffinal}', [ShoppingController::class, 'listByDate']);
     Route::get('/shopping/shoppingChangeState/{state}/{value}', [ShoppingController::class, 'shoppingChangeState']);
     Route::get('/shopping/shoppingproducts/{id}', [ShoppingController::class, 'getProductosComprados']);
     Route::get('/print/{id}', [ShoppingController::class, 'printList'])->name('shopping.printList');

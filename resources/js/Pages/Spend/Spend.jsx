@@ -118,7 +118,6 @@ const Gastos = (params) => {
     setCargar(true)
     let fechaHoy = fechas.fechaInicio.split("-")
     let iMesMenos = fechaHoy[1] - 1
-
     let ano = fechaHoy[0]
     if (fechaHoy[1] == 1) {
       iMesMenos = 12

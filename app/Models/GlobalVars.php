@@ -16,10 +16,10 @@ class GlobalVars extends Model
     {
         $this->globalVars = new stdClass();
         //$this->globalVars->urlRoot = "https://tucasabonita.site/";
-        $this->globalVars->urlRoot = "https://tucasabonita.site/";
+        $this->globalVars->urlRoot = "https://heladeriaoohz.tucasabonita.site/";
 
         // $this->globalVars->myUrl="http://192.168.20.20:8000/";
-        $this->globalVars->myUrl = "http://heladeria.test/";
+        $this->globalVars->myUrl = "https://heladeriaoohz.tucasabonita.site/";
 
         $this->globalVars->dirImagenesCategorias = "C:/laragon\www/heladeria/public/Images/Categories/";
         // $this->globalVars->dirImagenesCategorias = "/home/u629086351/domains/heladeria.online/public_html/public/Images/Categories/";

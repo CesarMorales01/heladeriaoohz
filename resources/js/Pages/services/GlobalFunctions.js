@@ -34,7 +34,6 @@ class GlobalFunctions {
 
     formatFecha(fecha){
       var fecha = new Date(fecha); //Fecha actual
-      console.log(fecha)
       var mes = fecha.getMonth()+1; //obteniendo mes
       var dia = fecha.getDate(); //obteniendo dia
       var ano = fecha.getFullYear(); //obteniendo año
@@ -43,6 +42,11 @@ class GlobalFunctions {
       if(mes<10)
       mes='0'+mes //agrega cero si el menor de 10
       return ano+"-"+mes+"-"+dia
+    }
+
+    formatInvertFecha(fecha){
+      const invert=fecha.split('-')
+      return invert[2]+"-"+invert[1]+"-"+invert[0]
     }
 
     formatNumber(num){

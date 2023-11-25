@@ -1,4 +1,5 @@
 import React from 'react'
+import Pagination from '../Product/Pagination'
 
 const TablaClientes = (params) => {
 
@@ -56,7 +57,11 @@ const TablaClientes = (params) => {
                         })}
                 </tbody>
             </table>
-
+            {params.noClientes ?
+                ''
+                :
+                <Pagination class="mt-6" links={params.pagination} />
+            }
         </div>
     )
 }

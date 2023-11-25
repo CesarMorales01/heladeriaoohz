@@ -132,7 +132,7 @@ const Clientes = (params) => {
             </div>
             <h1 style={{ marginTop: '0.5em', fontSize: '1.5em' }} id="titulo" className="text-center">Lista de clientes</h1>
             <div className="container">
-                <TablaClientes noClientes={noClientes} clientes={filterClients}></TablaClientes>
+                <TablaClientes pagination={params.clientes.links} noClientes={noClientes} clientes={filterClients}></TablaClientes>
             </div>
         </AuthenticatedLayout>
     )

@@ -77,32 +77,25 @@ const DialogoCompraN = (params) => {
                                                 <td></td>
                                             </tr>
                                             <tr style={{ display: item.tops.length > 0 ? '' : 'none', fontSize: '14px', color: 'green' }}>
-                                                <th scope="col"></th>
+                                                <th colSpan='2'></th>
                                                 <th scope="col">Topping</th>
-                                                <th scope="col">Valor</th>
                                                 <th scope="col">Cant</th>
-                                                <th scope="col">Subtotal</th>
+                                                <th></th>
                                             </tr>
                                             {item.tops ?
                                                 item.tops.map((top, index) => {
                                                     return (
                                                         <tr style={{ fontSize: '14px', color: 'green' }} key={index}>
-                                                            <td></td>
+                                                            <th colSpan='2'></th>
                                                             <td>{top.nombre}</td>
-                                                            <td>$ {glob.formatNumber(top.valor)}</td>
                                                             <td>{top.cantidad}</td>
-                                                            <td>$ {glob.formatNumber(parseInt(top.valor) * parseInt(top.cantidad))}</td>
+                                                            <th></th>
                                                         </tr>
                                                     )
                                                 })
                                                 :
                                                 ''
                                             }
-                                            <tr style={{ display: item.tops.length > 0 ? '' : 'none' }}>
-                                                <th></th>
-                                                <th colSpan='2'>Total producto + toppings</th>
-                                                <td >$ {glob.formatNumber(totalItem(item))}</td>
-                                            </tr>
                                         </thead>
                                     )
                                 })}

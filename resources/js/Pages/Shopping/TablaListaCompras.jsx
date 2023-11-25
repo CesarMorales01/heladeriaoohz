@@ -83,7 +83,6 @@ const TablaListaCompras = (params) => {
                     <tr>
                         <th style={{ textAlign: 'center' }} scope="col">Fecha</th>
                         <th style={{ textAlign: 'center' }} scope="col">Cliente</th>
-                        <th style={{ textAlign: 'center' }} scope="col">Comentario cliente</th>
                         <th style={{ textAlign: 'center' }} scope="col">Detalle</th>
                         <th style={{ textAlign: 'center' }} scope="col">Total venta</th>
                         <th style={{ textAlign: 'center' }} scope="col">Estado</th>
@@ -106,13 +105,10 @@ const TablaListaCompras = (params) => {
                             return (
                                 <tr className='align-middle' key={index}>
                                     <th >
-                                        {item.fecha}
+                                        {glob.formatInvertFecha(item.fecha)}
                                     </th>
                                     <td>
                                         <a href={validarSiCliente(item.cliente.nombre) ? '' : route('customer.editar', [item.cliente.cedula, 'nothing'])} style={{ textDecoration: item.cedula != '' ? 'underline' : '', color: 'blue' }} >{nombreCliente} </a>
-                                    </td>
-                                    <td >
-                                        {item.comentario_cliente.substring(0, 60)}...
                                     </td>
                                     <td>
                                         <button style={{ backgroundColor: 'white', color: 'black' }} onClick={() => abrirCompraN(item)} className='btn btn-outline-info rounded' type="button" data-toggle="modal" data-target="#dialogoCompraN">

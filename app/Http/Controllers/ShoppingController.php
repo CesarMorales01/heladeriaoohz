@@ -26,23 +26,47 @@ class ShoppingController extends Controller
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
         $globalVars->info = DB::table('info_pagina')->first();
-        $compras = DB::table('lista_compras')->orderBy('id', 'desc')->paginate(100);
+        $date = now();
+        $año = date_format($date, "y");
+        $mes = date_format($date, "m");
+        $dia = date_format($date, "d");
+        //$ffinal = date("Y-m-t", strtotime($date));
+
+        $finicial = $año . "-" . $mes . "-" . $dia;
+        $compras = DB::table('lista_compras')->whereBetween('fecha', [$finicial, $finicial])->paginate(100);
         foreach ($compras as $compra) {
-            // Validar si la compra pertenece a un cliente registrado... si no mandar id
-            if ($compra->cliente != '') {
-                $cliente = DB::table('clientes')->where('cedula', '=', $compra->cliente)->first();
-                $compra->cliente = $cliente;
-            } else {
-                $cliente1 = new stdClass();
-                $cliente1->cedula = '';
-                $cliente1->nombre = '';
-                $compra->cliente = $cliente1;
-            }
+            $compra->cliente=$this->getClienteCompra($compra->cliente);
             $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $compra->id)->get();
             $compra->listaProductos = $listaProductos;
         }
         $token = csrf_token();
         return Inertia::render('Shopping/Shopping', compact('auth', 'compras', 'globalVars', 'token'));
+    }
+
+    function getClienteCompra($cliente)
+    {
+        // Validar si la compra pertenece a un cliente registrado... si no mandar id
+        $getCliente='';
+        if ($cliente != '') {
+            $getCliente = DB::table('clientes')->where('cedula', '=', $cliente)->first();
+        } else {
+            $cliente1 = new stdClass();
+            $cliente1->cedula = '';
+            $cliente1->nombre = '';
+            $getCliente = $cliente1;
+        }
+        return $getCliente;
+    }
+
+    public function listByDate($finicial, $ffinal)
+    {
+        $lista = DB::table('lista_compras')->whereBetween('fecha', [$finicial, $ffinal])->orderBy('fecha', 'desc')->get();
+        foreach ($lista as $compra) {
+            $compra->cliente=$this->getClienteCompra($compra->cliente);
+            $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $compra->id)->get();
+            $compra->listaProductos = $listaProductos;
+        }
+        return response()->json($lista, 200, []);
     }
 
     public function create()
@@ -67,7 +91,7 @@ class ShoppingController extends Controller
         $datosCompra->id = '';
         $categorias = DB::table('categorias')->get();
         $adiciones = DB::table('toppings')->get();
-        $categoriasAdiciones=DB::table('categorias_toppings')->get();
+        $categoriasAdiciones = DB::table('categorias_toppings')->get();
         DB::table('cartotoppings')->delete();
         return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra', 'categorias', 'adiciones', 'categoriasAdiciones'));
     }
@@ -253,16 +277,16 @@ class ShoppingController extends Controller
             $subtotal = $item->precio * $item->cantidad;
             $item->subtotal = $subtotal;
             $tops = DB::table('lista_toppings_comprados')->where('fk_compra', '=', $id)->where('fk_producto', '=', $item->codigoProductoCarrito)->get();
-            $totalTops=0;
+            $totalTops = 0;
             if ($tops) {
                 foreach ($tops as $top) {
-                    $subTop=$top->valor * $top->cantidad;
-                    $top->subtotal=$subTop;
-                    $totalTops=($totalTops+$subTop);
+                    $subTop = $top->valor * $top->cantidad;
+                    $top->subtotal = $subTop;
+                    $totalTops = ($totalTops + $subTop);
                 }
                 $item->tops = $tops;
             }
-            $totalFactura = ($totalFactura + $subtotal)+(intval($totalTops)*$item->cantidad);
+            $totalFactura = ($totalFactura + $subtotal) + (intval($totalTops) * $item->cantidad);
         }
         $datosCompra->totalFactura = $totalFactura;
         $datosCompra->listaProductos = $listaProductos;

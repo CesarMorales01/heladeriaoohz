@@ -49,33 +49,26 @@ const ShoppingCart = (params) => {
                                     <td></td>
                                 </tr>
                                 <tr style={{ display: item.topping.length > 0 ? '' : 'none', fontSize: '14px', color: 'green' }}>
-                                    <th scope="col"></th>
+                                    <th colSpan={'2'} scope="col"></th>
                                     <th scope="col">Topping</th>
-                                    <th scope="col">Valor</th>
                                     <th scope="col">Cant</th>
-                                    <th scope="col">Subtotal</th>
+                                    <th></th>
                                 </tr>
                                 {item.topping ?
                                     item.topping.map((top, index) => {
 
                                         return (
                                             <tr style={{ fontSize: '14px', color: 'green' }} key={index}>
-                                                <td></td>
+                                                <td colSpan={'2'}></td>
                                                 <td>{top.nombre}</td>
-                                                <td>$ {glob.formatNumber(top.valor)}</td>
                                                 <td>{top.cantidad}</td>
-                                                <td>$ {glob.formatNumber(top.subtotalTopping)}</td>
+                                                <th></th>
                                             </tr>
                                         )
                                     })
                                     :
                                     ''
                                 }
-                                <tr style={{ display: item.topping.length > 0 ? '' : 'none' }}>
-                                    <th></th>
-                                    <th colSpan='2'>Total producto + toppings</th>
-                                    <td >$ {glob.formatNumber(item.subTodo)}</td>
-                                </tr>
                             </thead>
                         )
                     })}
