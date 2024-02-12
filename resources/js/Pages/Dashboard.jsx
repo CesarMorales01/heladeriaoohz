@@ -113,7 +113,7 @@ export default function Dashboard(params) {
                                 <div onClick={goEgresos} className="card border border-primary card-flyer pointer">
                                     <img style={{ width: '12em', height: '10em', marginTop: '1em' }} src={logoEgresos} className="card-img-top img-fluid centerImg" alt="" />
                                     <div style={{ textAlign: 'center' }} className="card-body">
-                                        <h2 className="card-title superTitulo">Egresos</h2>
+                                        <h2 className="card-title superTitulo">Gastos</h2>
                                     </div>
                                 </div>
                             </div>

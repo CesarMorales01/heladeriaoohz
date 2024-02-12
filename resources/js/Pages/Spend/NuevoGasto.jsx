@@ -105,17 +105,17 @@ const NuevoGasto = (params) => {
                         <br />
                         <form method="POST" id="formCrear" action={route('spend.store')} >
                             <input type="hidden" name='_token' value={params.token} />
-                            <input name="fecha" type="date" value={gasto.fecha} className='form-control border' onChange={cambioFecha} id="inputDate" />
+                            <input name="fecha" type="date" value={gasto.fecha} className='form-control rounded border' onChange={cambioFecha} id="inputDate" />
                             <label style={{ marginTop: '0.5em' }}>Selecciona categoria:</label>
                             <SelectCategoriesNewIncome getCategoria={cambioCategoria} categorias={categorias} />
                             <label style={{ marginTop: '0.2em' }}>Categoria seleccionada:</label>
                             <input type="hidden" name='categoria' value={gasto.categoria} />
-                            <input type={'text'} className='form-control border' disabled value={gasto.nombreCategoria}></input>
+                            <input type={'text'} className='form-control rounded border' disabled value={gasto.nombreCategoria}></input>
                             <label style={{ marginTop: '0.5em' }}>Valor:</label>
                             <br />
-                            <input name='valor' onChange={cambioValor} className='form-control border' type="number" placeholder='Valor' value={gasto.valor} />
+                            <input name='valor' onChange={cambioValor} className='form-control rounded border' type="number" placeholder='Valor' value={gasto.valor} />
                             <br />
-                            <textarea name='comentario' onChange={cambioComentario} className='form-control border' placeholder='Comentarios' value={gasto.comentario}></textarea>
+                            <textarea name='comentario' onChange={cambioComentario} className='form-control rounded border' placeholder='Comentarios' value={gasto.comentario}></textarea>
                         </form>
                         <div style={{ marginTop: '1em', marginBottom: '1em' }} className="col text-center">
                             <div className="modal-footer">

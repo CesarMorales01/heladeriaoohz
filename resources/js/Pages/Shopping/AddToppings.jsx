@@ -100,22 +100,22 @@ const AddToppings = (params) => {
               }
             })
             return (
-              <div key={index} style={{ margin: '0.5em', width: '13em', height: '17em' }} className="card border card-flyer pointer col-lg-3 col-md-3 col-sm-3 col-3">
-                <img style={{ width: '70%', height: 'auto' }} src={img} className="card-img-top img-fluid centerImg" alt="" />
+              <div key={index} style={{ marginTop: '0.5em' }} className="card border card-flyer pointer col-lg-3 col-md-3 col-sm-6 col-6">
+                <img style={{ width: '65%', height: 'auto', marginTop: '0.2em' }} src={img} className="card-img-top img-fluid centerImg" alt="" />
                 <h2 style={{ fontWeight: 'bold' }} id={'tituloTopping' + index} className="card-title">{item.nombre}</h2>
-                <div className='row justify-content-center'>
-                  <div className='col-4'>
-                    <button disabled={params.loadingTops == '' ? true : false} onClick={() => params.menosCantTopping(item)} className="btn btn-light btn-sm">
+                <div className='row'>
+                  <div style={{ marginLeft: '-0.6em' }} className='col-4'>
+                    <button  disabled={params.loadingTops == '' ? true : false} onClick={() => params.menosCantTopping(item)} className="btn btn-light btn-sm">
                       <svg style={{ color: 'green' }} xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="currentColor" className="bi bi-dash-square" viewBox="0 0 16 16">
                         <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                         <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
                       </svg>
                     </button>
                   </div>
-                  <div style={{ marginTop: '0.3em' }} className='col-4'>
+                  <div style={{ marginTop: '0.3em', marginLeft: '0.5em' }} className='col-4'>
                     <button disabled={params.loadingTops == '' ? true : false} id={'idCantTopping' + item.id} onClick={() => openDialogoSuperCantTopping(item)} className='btn btn-outline-success bt-sm'>{cant}</button>
                   </div>
-                  <div className='col-4'>
+                  <div style={{ marginLeft: '-0.5em' }} className='col-4'>
                     <button disabled={params.loadingTops == '' ? true : false} onClick={() => params.masCantTopping(item)} className="btn btn-light btn-sm">
                       <svg style={{ color: 'green' }} xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="currentColor" className="bi bi-plus-square" viewBox="0 0 16 16">
                         <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />

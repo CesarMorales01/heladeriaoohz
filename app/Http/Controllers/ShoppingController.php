@@ -26,14 +26,7 @@ class ShoppingController extends Controller
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
         $globalVars->info = DB::table('info_pagina')->first();
-        $date = now();
-        $año = date_format($date, "y");
-        $mes = date_format($date, "m");
-        $dia = date_format($date, "d");
-        //$ffinal = date("Y-m-t", strtotime($date));
-
-        $finicial = $año . "-" . $mes . "-" . $dia;
-        $compras = DB::table('lista_compras')->whereBetween('fecha', [$finicial, $finicial])->paginate(100);
+        $compras = DB::table('lista_compras')->whereBetween('fecha', [$this->getFechaHoy(), $this->getFechaHoy()])->paginate(100);
         foreach ($compras as $compra) {
             $compra->cliente=$this->getClienteCompra($compra->cliente);
             $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $compra->id)->get();
@@ -92,7 +85,6 @@ class ShoppingController extends Controller
         $categorias = DB::table('categorias')->get();
         $adiciones = DB::table('toppings')->get();
         $categoriasAdiciones = DB::table('categorias_toppings')->get();
-        DB::table('cartotoppings')->delete();
         return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra', 'categorias', 'adiciones', 'categoriasAdiciones'));
     }
 
@@ -140,6 +132,7 @@ class ShoppingController extends Controller
         ]);
         $id = DB::getPdo()->lastInsertId();
         $nums = count($datos->listaProductos);
+        $idCartToppings='';
         for ($i = 0; $i < $nums; $i++) {
             DB::table('lista_productos_comprados')->insert([
                 'fk_compra' => $id,
@@ -154,6 +147,7 @@ class ShoppingController extends Controller
             $this->restarInventario($datos->listaProductos[$i]);
             if ($datos->listaProductos[$i]->topping) {
                 foreach ($datos->listaProductos[$i]->topping as $top) {
+                    $idCartToppings=$top->idCart;
                     DB::table('lista_toppings_comprados')->insert([
                         'fk_compra' => $id,
                         'fk_producto' => $datos->listaProductos[$i]->id,
@@ -164,6 +158,7 @@ class ShoppingController extends Controller
                 }
             }
         }
+        DB::table('cartotoppings')->where('idCart', '=', $idCartToppings)->delete();
         return response()->json('ok', 200, []);
     }
 
@@ -181,7 +176,7 @@ class ShoppingController extends Controller
             'comentarios' => $datos->comentarios,
             'dinerorecibido' => $datos->dinerorecibido,
             'cambio' => $datos->cambio,
-            'estado' => 'Recibida'
+            'estado' => $datos->estado
         ]);
         $nums = count($datos->listaProductos);
         DB::table('lista_productos_comprados')->where('fk_compra', '=', $datos->id)->delete();
@@ -189,17 +184,37 @@ class ShoppingController extends Controller
         for ($z = 0; $z < count($datos->listaProductosAntiguos); $z++) {
             $this->sumarInventario($datos->listaProductosAntiguos[$z]);
         }
+        // Eliminar toppings anteriores
+        DB::table('lista_toppings_comprados')->where('fk_compra', '=', $datos->id)->delete();
+        $idCartToppings='';
         for ($i = 0; $i < $nums; $i++) {
             DB::table('lista_productos_comprados')->insert([
                 'fk_compra' => $datos->id,
                 'compra_n' => $datos->compra_n,
                 'codigo' => $datos->listaProductos[$i]->codigo,
+                'codigoProductoCarrito'=> $datos->listaProductos[$i]->id,
                 'producto' => $datos->listaProductos[$i]->nombre,
                 'descripcion' => $datos->listaProductos[$i]->descripcion,
                 'cantidad' => $datos->listaProductos[$i]->cantidad,
                 'precio' => $datos->listaProductos[$i]->precio
             ]);
             $this->restarInventario($datos->listaProductos[$i]);
+            //Ingresar toppings de nuevo
+            if ($datos->listaProductos[$i]->topping) {
+                foreach ($datos->listaProductos[$i]->topping as $top) {
+                    $idCartToppings=$top->idCart;
+                    DB::table('lista_toppings_comprados')->insert([
+                        'fk_compra' => $datos->id,
+                        'fk_producto' => $datos->listaProductos[$i]->id,
+                        'nombre' => $top->nombre,
+                        'valor' => $top->valor,
+                        'cantidad' => $top->cantidad
+                    ]); 
+                } 
+            }  
+        }
+        if($idCartToppings!=''){
+            DB::table('cartotoppings')->where('idCart', '=', $idCartToppings)->delete();
         }
         return response()->json('updated', 200, []);
     }
@@ -328,11 +343,38 @@ class ShoppingController extends Controller
         $globalVars = $this->global->getGlobalVars();
         $globalVars->info = DB::table('info_pagina')->first();
         $productos = $this->all_products();
+        foreach ($productos as $p) {
+            $img = DB::table('imagenes_productos')->where('fk_producto', '=', $p->id)->first();
+            if ($img != null) {
+                $p->imagen = $img->nombre_imagen;
+            } else {
+                $p->imagen = '';
+            }
+        }
         $token = csrf_token();
+
         $datosCompra = DB::table('lista_compras')->where('id', '=', $id)->first();
         $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $id)->get();
         $datosCompra->listaProductos = $listaProductos;
+        $toppings=DB::table('lista_toppings_comprados')->where('fk_compra', '=', $id)->get();
+        $idCart=app(ToppingsToCarController::class)->getIdCart();
+        if($toppings!=null){
+            foreach($toppings as $top){
+                DB::table('cartotoppings')->insert([
+                    'idCart'=>$idCart,
+                    'nombre' => $top->nombre,
+                    'fk_producto' => $top->fk_producto,
+                    'cantidad' => $top->cantidad,
+                    'valor' => $top->valor,
+                    'fecha' => $this->getFechaHoy()
+                ]);
+            }
+        }else{
+           $toppings=[]; 
+        }
+        $tops=DB::table('cartotoppings')->where('idCart', '=', $idCart)->get();
 
+        $datosCompra->toppings=$tops;
         if ($datosCompra->cliente != '') {
             $cliente = DB::table('clientes')->where('cedula', '=', $datosCompra->cliente)->first();
             $datosCompra->cliente = $cliente;
@@ -342,7 +384,10 @@ class ShoppingController extends Controller
             $cliente1->nombre = '';
             $datosCompra->cliente = $cliente1;
         }
-        return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra'));
+        $categorias = DB::table('categorias')->get();
+        $adiciones = DB::table('toppings')->get();
+        $categoriasAdiciones = DB::table('categorias_toppings')->get();
+        return Inertia::render('Shopping/NewShopping', compact('auth', 'clientes', 'globalVars', 'deptos', 'municipios', 'productos', 'token', 'datosCompra', 'categorias', 'adiciones', 'categoriasAdiciones'));
     }
 
     public function update(Request $request, string $id)

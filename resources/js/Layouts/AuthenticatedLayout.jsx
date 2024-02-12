@@ -39,7 +39,7 @@ export default function Authenticated({ user, header, children, globalVars }) {
                                     Ingresos
                                 </NavLink>
                                 <NavLink href={route('spend.list', 'nothing')} active={route().current('spend.list')}>
-                                    Egresos
+                                    Gastos
                                 </NavLink>
                                 <NavLink href={route('provider.list', 'nothing')} active={route().current('provider.list')}>
                                     Proveedores

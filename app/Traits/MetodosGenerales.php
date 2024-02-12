@@ -49,4 +49,13 @@ trait MetodosGenerales
         }
     }
 
+    public function getFechaHoy(){
+        date_default_timezone_set('America/Bogota');
+        $date = now();
+        $año = date_format($date, "y");
+        $mes = date_format($date, "m");
+        $dia = date_format($date, "d");
+        return $año . "-" . $mes . "-" . $dia;
+    }
+
 }

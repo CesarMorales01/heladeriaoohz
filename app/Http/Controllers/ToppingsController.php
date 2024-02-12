@@ -39,7 +39,6 @@ class ToppingsController extends Controller
     
     public function index()
     {
-        
     }
 
     

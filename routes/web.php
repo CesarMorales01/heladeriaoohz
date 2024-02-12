@@ -69,8 +69,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/topping/actualizar/{id}', [ToppingsController::class, 'actualizar'])->name('topping.actualizar');
     Route::post('/toppingtocar/save', [ToppingsToCarController::class, 'save']);
     Route::post('/toppingtocar/actualizar', [ToppingsToCarController::class, 'actualizar']);
-    Route::get('/toppingtocar/{fk_prod}', [ToppingsToCarController::class, 'borrar']);
-    Route::get('/toppingtocar/borrarone/{fk_prod}', [ToppingsToCarController::class, 'borrarOne']);
+    Route::post('/toppingtocar/actualizar/supercant', [ToppingsToCarController::class, 'actualizarSuperCant']);
+    Route::get('/toppingtocar/{fk_prod}/{idCart}', [ToppingsToCarController::class, 'borrar']);
+    Route::get('/toppingtocar/borrarone/{fk_prod}/{idCart}', [ToppingsToCarController::class, 'borrarOne']);
     Route::get('/catetopping/list/{state?}', [CategoriasToppigController::class, 'listar'])->name('catetopping.list');
     Route::resource('/catetopping', CategoriasToppigController::class);
 });

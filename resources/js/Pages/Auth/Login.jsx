@@ -19,6 +19,7 @@ export default function Login({ status, canResetPassword, globalVars }) {
 
     useEffect(() => {
         validarRemember()
+        ponerDatosEjemplo()
         return () => {
             reset('password');
         };
@@ -33,6 +34,15 @@ export default function Login({ status, canResetPassword, globalVars }) {
             }, 5000);
         }
     });
+
+    function ponerDatosEjemplo(){
+        setData((valores) => ({
+            ...valores,
+            email: 'ejemplo@gmail.com',
+            password: '12345678',
+            remember: true
+        }))
+    }
 
     function validarRemember() {
         if (glob.getCookie('email') != '') {

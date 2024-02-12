@@ -11,18 +11,18 @@ const MasImagenes = (params) => {
     const [id, setId] = useState('')
     const [mensajeImgs, setMensajeImgs] = useState('')
     const [imagenEliminar, setImagenEliminar] = useState({
-        id:'',
-        nombre:''
+        id: '',
+        nombre: ''
     })
     const [selectedFile, setSelectedFile] = useState(null);
     const [fileId, setFileId] = useState(Math.random())
     const [cargar, setCargar] = useState(true)
 
-    
+
     useEffect(() => {
         checkId()
     })
-    
+
     function checkId() {
         if (id != params.id) {
             setId(params.id)
@@ -46,7 +46,7 @@ const MasImagenes = (params) => {
             })
     }
 
-    function sweetAlert(mensaje){
+    function sweetAlert(mensaje) {
         Swal.fire({
             title: mensaje,
             icon: 'warning',
@@ -91,12 +91,12 @@ const MasImagenes = (params) => {
 
     function fetchBorrarImagen() {
         loadingOnImgs()
-        const url = params.globalVars.myUrl+ 'product/deleteimage/'+imagenEliminar.id+"?nombre="+imagenEliminar.nombre
+        const url = params.globalVars.myUrl + 'product/deleteimage/' + imagenEliminar.id + "?nombre=" + imagenEliminar.nombre
         fetch(url)
             .then((response) => {
                 return response.json()
             }).then((json) => {
-                if (json=='ok') {
+                if (json == 'ok') {
                     setFileId(Math.random())
                     setMensajeImgs('Imagen eliminada.')
                     document.getElementById('botonDialogoEliminarImg').click()
@@ -104,16 +104,16 @@ const MasImagenes = (params) => {
                     loadingOffImgs()
                 } else {
                     // Puede estar ocupada por una promocion u otro error al eliminar la imagen....
-                   sweetAlert('¡Imagen ocupada por una promoción!')
-                   document.getElementById('botonDialogoEliminarImg').click()
-                   loadingOffImgs()
+                    sweetAlert('¡Imagen ocupada por una promoción!')
+                    document.getElementById('botonDialogoEliminarImg').click()
+                    loadingOffImgs()
                 }
             })
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (selectedFile!=null) {
+        if (selectedFile != null) {
             loadingOnImgs()
             const formData = new FormData();
             const fileName = selectedFile.name
@@ -124,8 +124,8 @@ const MasImagenes = (params) => {
                     headers: { "Content-Type": "multipart/form-data" }
                 }).then((res) => {
                     console.log(res.data)
-                    if (res.data=='ok') {
-                        document.getElementById(fileId).value=""
+                    if (res.data == 'ok') {
+                        document.getElementById(fileId).value = ""
                         setFileId(Math.random())
                         setMensajeImgs('Imagen guardada.')
                         reiniciarImagenes()
@@ -138,9 +138,9 @@ const MasImagenes = (params) => {
                 });
             } catch (error) {
             }
-        }else{
+        } else {
             setMensajeImgs("Debes seleccionar una imagen!")
-        }  
+        }
     }
 
     const handleFileSelect = (event) => {
@@ -154,25 +154,27 @@ const MasImagenes = (params) => {
             <h1 style={{ textAlign: 'center', margin: '1em', fontSize: '1.5em' }} >Imagenes de {params.nombre}</h1>
             <div className='container' style={{ margin: '0.2em' }}>
                 <div style={{ padding: '0.2em' }} className='row'>
-                <form onSubmit={handleSubmit} encType="multipart/form-data">
-                    <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
-                        <input data-toggle="tooltip" title="Ingresa imagenes con fondo blanco, aprox 500x500 mp." type="file" id={fileId} onChange={handleFileSelect} />
-                        <span style={{ color: 'red' }}>{mensajeImgs}</span>
+                    <form onSubmit={handleSubmit} encType="multipart/form-data">
+                        <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
+                            <input data-toggle="tooltip" title="Ingresa imagenes con fondo blanco, aprox 500x500 mp." type="file" id={fileId} onChange={handleFileSelect} />
+                            <span style={{ color: 'red' }}>{mensajeImgs}</span>
+                            <br />
+                            <span id='spanvalidandoNombreImagenImgs' style={{ display: 'none' }} className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </div>
+                        <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
+                            <label>
+                                Seleccionar imagen:
+                            </label>
+                            <img id="ingresarImg" width="140px" height="150px" src={params.globalVars.myUrl + 'Images/Config/noPreview.jpg'} />
+                        </div>
                         <br />
-                        <span id='spanvalidandoNombreImagenImgs' style={{ display: 'none' }} className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    </div>
-                    <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
-                        <img id="ingresarImg" width="140px" height="150px" src={params.globalVars.myUrl + 'Images/Config/noPreview.jpg'} />
-                    </div>
-                    <br />
-                    <div style={{ marginTop: '0.4em' }} className="col text-center">
-                        
-                        <PrimaryButton type='submit' id="btnIngresarImg" className="ml-4" >Ingresar imagen</PrimaryButton>
-                        <button id='btnLoadingImg' style={{ display: 'none', backgroundColor: 'red' }} className="btn btn-primary" type="button" disabled>
-                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            Loading...
-                        </button>
-                    </div>
+                        <div style={{ marginTop: '0.4em' }} className="col text-center">
+                            <PrimaryButton type='submit' id="btnIngresarImg" className="ml-4" >Ingresar imagen</PrimaryButton>
+                            <button id='btnLoadingImg' style={{ display: 'none', backgroundColor: 'red' }} className="btn btn-primary" type="button" disabled>
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </button>
+                        </div>
                     </form>
                 </div>
                 <div style={{ marginTop: '0.4em' }} className="container">
@@ -189,8 +191,8 @@ const MasImagenes = (params) => {
                                             <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                                         </svg>
                                     </button>
-                                    
-                                    <img onLoad={loadingOffImgs} className="img-fluid" src={params.globalVars.urlImagenes  + item.nombre_imagen} />
+
+                                    <img onLoad={loadingOffImgs} className="img-fluid" src={params.globalVars.urlImagenes + item.nombre_imagen} />
                                 </div>
                             )
                         })}

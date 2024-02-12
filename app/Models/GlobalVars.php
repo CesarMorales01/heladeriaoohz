@@ -19,15 +19,15 @@ class GlobalVars extends Model
         $this->globalVars->urlRoot = "https://heladeriaoohz.tucasabonita.site/";
 
         // $this->globalVars->myUrl="http://192.168.20.20:8000/";
-        $this->globalVars->myUrl = "https://heladeriaoohz.tucasabonita.site/";
+        $this->globalVars->myUrl = "http://heladeriaoohz.test/";
 
-        $this->globalVars->dirImagenesCategorias = "C:/laragon\www/heladeria/public/Images/Categories/";
+        $this->globalVars->dirImagenesCategorias = "C:/laragon\www/heladeriaoohz/public/Images/Categories/";
         // $this->globalVars->dirImagenesCategorias = "/home/u629086351/domains/heladeria.online/public_html/public/Images/Categories/";
 
         $this->globalVars->urlImagenesCategorias = $this->globalVars->myUrl."Images/Categories/";
         // $this->globalVars->urlImagenesCategorias = "https://heladeria.online/Images/Categories/";
 
-        $this->globalVars->dirImagenes = "C:\/laragon\www\/heladeria\/public\Images\/Products\/";
+        $this->globalVars->dirImagenes = "C:\/laragon\www\/heladeriaoohz\/public\Images\/Products\/";
         //  $this->globalVars->dirImagenes = "/home/u629086351/domains/heladeria.online/public_html/Images/Products/";
 
         /* Se debe crear una url para las imagenes porque <img /> lee url no directorios.*/

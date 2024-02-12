@@ -79,7 +79,7 @@ const DialogoNewTopping = (params) => {
 
     function validarCampos(e) {
         e.preventDefault()
-        if (topping.nombre != '' && topping.valor!='') {
+        if (topping.nombre != '' && topping.valor != '') {
             if (topping.id == '') {
                 document.getElementById('formCrear').submit()
             } else {
@@ -100,7 +100,7 @@ const DialogoNewTopping = (params) => {
 
     function abrirDialogoEliminar(top) {
         Swal.fire({
-            title: '¿Eliminar '+top.nombre+' ?',
+            title: '¿Eliminar ' + top.nombre + ' ?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -120,7 +120,7 @@ const DialogoNewTopping = (params) => {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h1 style={{ fontSize: '1.5em', marginLeft: '0.5em' }} className="modal-title">{params.topping.id == '' ? 'Crear topping' : 'Editar topping'}</h1>
-                        <button onClick={()=>abrirDialogoEliminar(params.topping)} id='btnDialogoEliminar' style={{ marginTop: '0.5em', display: params.topping.id == '' ? 'none' : '', backgroundColor: 'red' }} className="btn btn-danger" type="button">
+                        <button onClick={() => abrirDialogoEliminar(params.topping)} id='btnDialogoEliminar' style={{ marginTop: '0.5em', display: params.topping.id == '' ? 'none' : '', backgroundColor: 'red' }} className="btn btn-danger" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
                                 <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
@@ -154,6 +154,10 @@ const DialogoNewTopping = (params) => {
                             <br />
                             <div style={{ padding: '0.4em', marginTop: '0.8em' }} className='row border'>
                                 <div className='col-lg-12 col-md-12 col-sm-12 col-12'>
+                                    <label>
+                                        Seleccionar imagen:
+                                    </label>
+                                    <br />
                                     <input name='imagen' data-toggle="tooltip" title="" type="file" id="fileImg" onChange={mostrarImagen} />
                                 </div>
                                 <div style={{ marginTop: '0.2em' }} className='col-lg-12 col-md-12 col-sm-12 col-12'>

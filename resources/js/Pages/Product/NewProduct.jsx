@@ -43,7 +43,7 @@ const NewProduct = (params) => {
             setDisplayBtnBorrar('inline')
             // Se recibe un array en params.product, el id se registra en fk_producto
             let img = ''
-            if (params.producto[0].nombre_imagen=='') {
+            if (params.producto[0].nombre_imagen == '') {
                 img = 'noPreview.jpg'
             } else {
                 img = params.producto[0].nombre_imagen
@@ -51,7 +51,7 @@ const NewProduct = (params) => {
             setProducto({
                 id: params.producto[0].id,
                 referencia: params.producto[0].referencia,
-                categoria: params.producto[0].categoria,
+                categoria: params.producto[0].category_id,
                 nombre: params.producto[0].nombre,
                 descripcion: params.producto[0].descripcion,
                 cantidad: params.producto[0].cantidad,
@@ -226,7 +226,7 @@ const NewProduct = (params) => {
         form.action = route('product.actualizar', producto.id)
         form.submit()
     }
-  
+
     return (
         <AuthenticatedLayout
             user={params.auth.user} globalVars={params.globalVars} >
@@ -248,7 +248,7 @@ const NewProduct = (params) => {
                             <select onChange={cambioCate} onClick={cambioCate} name='categoria' id='selectCate' className="form-select rounded" >
                                 {params.categorias.map((item, index) => {
                                     return (
-                                        <option key={index} value={item.id} selected={item.nombre.trim() === producto.categoria}>{item.nombre}</option>
+                                        <option key={index} value={item.id} selected={item.id === producto.categoria}>{item.nombre}</option>
                                     )
                                 })}
                             </select>
@@ -274,6 +274,10 @@ const NewProduct = (params) => {
                             <input className='form-control rounded' name='valor' onChange={cambioPrecio} type='number' required placeholder="Valor" value={producto.valor == '' ? '' : producto.valor} />
                         </div>
                         <div style={{ marginTop: '1.5em' }} className="col-lg-6 col-md-6 col-sm-12 col-12" >
+                            <label>
+                                Seleccionar imagen:
+                            </label>
+                            <br />
                             <input name='imagen' data-toggle="tooltip" id='fileImagen' title="Ingresa imagenes con fondo blanco, aprox 500x500 mp." type="file" disabled={producto.id == '' ? false : true} onChange={mostrarImagen} />
                             <br /><br />
                             <img onLoad={spinOff} className='border' id="img" width="140px" height="150px" src={producto.imagen == 'noPreview.jpg' ? params.globalVars.myUrl + "Images/Config/" + producto.imagen : params.globalVars.urlImagenes + producto.imagen} />
@@ -285,7 +289,7 @@ const NewProduct = (params) => {
                             <div className='row'>
                                 <div className='col-md-6 col-6'>
                                     <PrimaryButton id="btnIngresar" type="button" onClick={validarFuncion} className="ml-4" >
-                                        {producto.id == '' ? 'Ingresar' : 'Editar'}
+                                        {producto.id == '' ? 'Ingresar producto' : 'Editar producto'}
                                     </PrimaryButton>
                                     <PrimaryButton id='btnLoading' style={{ display: 'none' }} className="ml-4" type="button" disabled>
                                         <span style={{ marginRight: '0.2em' }} className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

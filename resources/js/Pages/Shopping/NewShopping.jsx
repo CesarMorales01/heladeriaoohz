@@ -47,8 +47,9 @@ const NuevaCompra = (params) => {
         if (params.datosCompra.id == '') {
             setFecha()
         } else {
+            cargarParametros()
             if (datosCompra.cliente == '') {
-                cargarParametros()
+
             }
         }
         glob.setCookie('tops', JSON.stringify(params.adiciones), 3600 * 60)
@@ -56,22 +57,35 @@ const NuevaCompra = (params) => {
 
     useEffect(() => {
         if (datosCompra.listaProductos.length > 0) {
-            calcularTotales(datosCompra.listaProductos, toppingSelected)
+            // calcularTotales(datosCompra.listaProductos, toppingSelected)
         }
     }, [datosCompra.medio_de_pago])
 
     function cargarParametros() {
         let array = []
+        setTopppingSelected(params.datosCompra.toppings)
         for (let i = 0; i < params.datosCompra.listaProductos.length; i++) {
+            let arraytops = []
+            for (let z = 0; z < params.datosCompra.toppings.length; z++) {
+                if (params.datosCompra.toppings[z].fk_producto == params.datosCompra.listaProductos[i].codigoProductoCarrito) {
+                    arraytops.push(params.datosCompra.toppings[z])
+                }
+            }
             let objeto = {
-                id: params.datosCompra.listaProductos[i].id,
+                id: params.datosCompra.listaProductos[i].codigoProductoCarrito,
                 codigo: params.datosCompra.listaProductos[i].codigo,
                 nombre: params.datosCompra.listaProductos[i].producto,
                 descripcion: params.datosCompra.listaProductos[i].descripcion,
                 cantidad: params.datosCompra.listaProductos[i].cantidad,
-                precio: params.datosCompra.listaProductos[i].precio
+                precio: params.datosCompra.listaProductos[i].precio,
+                fk_compra: params.datosCompra.listaProductos[i].fk_compra,
+                topping: arraytops
             }
             array.push(objeto)
+            //Set autoincrement valor mas alto
+            if (idAutoIncrement <= params.datosCompra.listaProductos[i].codigoProductoCarrito) {
+                setIdAutoIncrement(parseInt(params.datosCompra.listaProductos[i].codigoProductoCarrito) + 1)
+            }
         }
         document.getElementById('inputDate').value = params.datosCompra.fecha
         setDatosCompra((valores) => ({
@@ -94,8 +108,9 @@ const NuevaCompra = (params) => {
             compra_n: params.datosCompra.compra_n
         }))
         setTimeout(() => {
-            // calcularTotales(array)
+            calcularTotales(array, params.datosCompra.toppings)
         }, 100);
+
     }
 
     function calcularTotales(prods, toppings) {
@@ -212,7 +227,7 @@ const NuevaCompra = (params) => {
             if (datosCompra.id == '') {
                 fetchRegistrarCompra()
             } else {
-                //  fetchUpdateCompra()
+                fetchUpdateCompra()
             }
         }
     }
@@ -231,6 +246,7 @@ const NuevaCompra = (params) => {
             if (json == 'updated') {
                 loadingOff()
                 successAlert('Venta actualizada')
+                document.getElementById('goShoppingIndex').click()
             }
         })
     }
@@ -324,9 +340,12 @@ const NuevaCompra = (params) => {
 
     function addToCar(e) {
         let array = datosCompra.listaProductos
-        array.push(getProducto(e.target.value))
-        reiniciarProductos()
-        calcularTotales(array, toppingSelected)
+        let newProd = getProducto(e.target.value)
+        if (newProd != undefined) {
+            array.push(getProducto(e.target.value))
+            reiniciarProductos()
+            calcularTotales(array, toppingSelected)
+        }
     }
 
     function reiniciarToppings() {
@@ -351,9 +370,16 @@ const NuevaCompra = (params) => {
         const validar = validarEnToppigSelected(top)
         if (Object.keys(validar).length > 0) {
             validar.nuevaCantidad = 1
+            //Actualiza
             fetchActToppingToCar(validar)
         } else {
             top.cant = 1
+            //validar si idCart y adjuntarlo
+            if (toppingSelected.length == 0) {
+                top.idCart = ''
+            } else {
+                top.idCart = toppingSelected[0].idCart
+            }
             let datos = {
                 'top': top,
                 'prod': productToTopping
@@ -361,12 +387,12 @@ const NuevaCompra = (params) => {
             if (validarInventario(productToTopping.id)) {
                 return
             }
+            //Ingresa por primera vez
             fetchToppingToCar(datos)
         }
     }
 
     function fetchActToppingToCar(obj) {
-      //  document.getElementById('btnModalLoading').click()
         const url = params.globalVars.myUrl + 'toppingtocar/actualizar?_token=' + params.token
         fetch(url, {
             method: 'POST',
@@ -381,12 +407,28 @@ const NuevaCompra = (params) => {
             setTopppingSelected(json)
             calcularTotales(datosCompra.listaProductos, json)
             setLoadingTops('none')
-          //  document.getElementById('btnCloseModalLoading').click()
+        })
+    }
+
+    function fetchActSuperCantToppingToCar(obj) {
+        const url = params.globalVars.myUrl + 'toppingtocar/actualizar/supercant?_token=' + params.token
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(obj),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            reiniciarToppings()
+            setTopppingSelected(json)
+            calcularTotales(datosCompra.listaProductos, json)
+            setLoadingTops('none')
         })
     }
 
     function fetchToppingToCar(obj) {
-      //  document.getElementById('btnModalLoading').click()
         const url = params.globalVars.myUrl + 'toppingtocar/save?_token=' + params.token
         fetch(url, {
             method: 'POST',
@@ -420,7 +462,6 @@ const NuevaCompra = (params) => {
             }))
             calcularTotales(array, json)
             setLoadingTops('none')
-           // document.getElementById('btnCloseModalLoading').click()
         })
     }
 
@@ -438,8 +479,15 @@ const NuevaCompra = (params) => {
         const validar = validarEnToppigSelected(item.item)
         if (Object.keys(validar).length > 0) {
             validar.nuevaCantidad = item.cant
-            fetchActToppingToCar(validar)
+            //Actualiza ingresando la cantidad directamente
+            fetchActSuperCantToppingToCar(validar)
         } else {
+            //validar idCart
+            if (toppingSelected.length == 0) {
+                item.item.idCart = ''
+            } else {
+                item.item.idCart = toppingSelected[0].idCart
+            }
             item.item.cant = item.cant
             let datos = {
                 'top': item.item,
@@ -461,32 +509,31 @@ const NuevaCompra = (params) => {
     }
 
     function borrarProducto(id) {
-        let tops = []
         if (toppingSelected.length > 0) {
-            const url = params.globalVars.myUrl + 'toppingtocar/' + id
+            const url = params.globalVars.myUrl + 'toppingtocar/' + id + '/' + toppingSelected[0].idCart
             fetch(url).then((response) => {
                 return response.json()
             }).then((json) => {
                 reiniciarToppings()
                 setTopppingSelected(json)
-                tops = json
+                const temp = datosCompra.listaProductos.filter((art) => art.id !== id)
+                calcularTotales(temp, json)
             })
+        } else {
+            const temp = datosCompra.listaProductos.filter((art) => art.id !== id)
+            calcularTotales(temp, toppingSelected)
         }
-        const temp = datosCompra.listaProductos.filter((art) => art.id !== id)
-        calcularTotales(temp, tops)
     }
 
     function borrarTopping(id) {
-        const url = params.globalVars.myUrl + 'toppingtocar/borrarone/' + id
+        const url = params.globalVars.myUrl + 'toppingtocar/borrarone/' + id + '/' + toppingSelected[0].idCart
         fetch(url).then((response) => {
             return response.json()
         }).then((json) => {
             reiniciarToppings()
             setTopppingSelected(json)
-            const temp = datosCompra.listaProductos.filter((art) => art.id !== id)
-            calcularTotales(temp, json)
+            calcularTotales(datosCompra.listaProductos, json)
         })
-
     }
 
     function validarcantidad(id) {
@@ -500,14 +547,12 @@ const NuevaCompra = (params) => {
     }
 
     function menosCant(item) {
-        console.log(item)
         if (validarcantidad(item.codigo) > 1) {
             reiniciarProductos()
             setTimeout(() => {
                 datosCompra.listaProductos.forEach(element => {
-                    console.log(element)
-                    if(element.id==item.id){
-                        element.cantidad=element.cantidad-1
+                    if (element.id == item.id) {
+                        element.cantidad = element.cantidad - 1
                     }
                 });
                 calcularTotales(datosCompra.listaProductos, toppingSelected)
@@ -555,13 +600,8 @@ const NuevaCompra = (params) => {
         reiniciarProductos()
         setTimeout(() => {
             datosCompra.listaProductos.forEach(element => {
-                if(element.id==item.id){
-                    if(element.nombre=='Maxi Cono'){
-                        console.log(element.cantidad)
-                        element.cantidad=parseInt(item.cantidad)-47
-                    }else{
-                        element.cantidad=parseInt(item.cantidad)
-                    } 
+                if (element.id == item.id) {
+                    element.cantidad = parseInt(item.cantidad)
                 }
             });
             calcularTotales(datosCompra.listaProductos, toppingSelected)
@@ -617,21 +657,21 @@ const NuevaCompra = (params) => {
                 <div style={{ textAlign: 'center', marginTop: '0.2em', display: windowDisplay == '4' ? 'none' : '' }} className="container">
                     <button onClick={() => setWindowDisplay('1')} style={{ textTransform: 'uppercase', margin: '0.4em', display: windowDisplay == '1' ? 'none' : '' }} className='btn btn-primary btn-sm'>Seleccionar productos</button>
                     <button onClick={() => setWindowDisplay('2')} style={{ textTransform: 'uppercase', margin: '0.4em', display: windowDisplay == '2' ? 'none' : '', backgroundColor: '#0ea6ab' }} className='btn btn-primary btn-sm'>Resumen carrito</button>
-                    <PrimaryButton style={{ margin: '0.4em', display: windowDisplay == '3' ? 'none' : '' }} onClick={() => setWindowDisplay('3')} className="btn btn-success" >Revisar compra</PrimaryButton>
+                    <PrimaryButton style={{ margin: '0.4em', display: windowDisplay == '3' ? 'none' : '' }} onClick={() => setWindowDisplay('3')} className="btn btn-success" >Revisar venta</PrimaryButton>
                 </div>
                 <div style={{ marginTop: '0.2em', display: windowDisplay == '3' ? '' : 'none' }} className='row justify-content-center'>
                     <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
-                        <h6 style={{ marginTop: '0.2em' }}>Fecha de compra:</h6>
-                        <input type="date" onChange={cambioFecha} name="fecha" id="inputDate" />
+                        <h6 style={{ marginTop: '0.2em' }}>Fecha de venta:</h6>
+                        <input type="date" className='rounded' onChange={cambioFecha} name="fecha" id="inputDate" />
                         <br />
                         <p style={{ textAlign: 'justify', color: 'black', marginTop: '0.4em' }}>Seleccionar cliente (Opcional)</p>
                         <SelectClientes getCliente={getCliente} clientes={params.clientes}></SelectClientes>
-                        <input type="text" style={{ marginTop: '0.2em' }} readOnly id='inputNombre' className="form-control" value={datosCompra.nombreCliente == '' ? '' : datosCompra.nombreCliente} />
-                        <textarea style={{ marginTop: '0.4em', display: 'none' }} name='comentario_cliente' placeholder='Comentario cliente...' onChange={cambioComentarioCliente} className="form-control" value={datosCompra.comentario_cliente}></textarea>
+                        <input type="text" style={{ marginTop: '0.2em' }} readOnly id='inputNombre' className="form-control rounded" value={datosCompra.nombreCliente == '' ? '' : datosCompra.nombreCliente} />
+                        <textarea style={{ marginTop: '0.4em', display: 'none' }} name='comentario_cliente' placeholder='Comentario cliente...' onChange={cambioComentarioCliente} className="form-control rounded" value={datosCompra.comentario_cliente}></textarea>
                         <div style={{ textAlign: 'center' }} onMouseOver={validarCliente}>
                             <ShoppingCart productosCarrito={datosCompra.listaProductos} ></ShoppingCart>
                         </div>
-                        <textarea name='comentarios' placeholder='Comentarios compra...' onChange={cambioComentario} className="form-control" value={datosCompra.comentarios}></textarea>
+                        <textarea name='comentarios' placeholder='Comentarios venta...' onChange={cambioComentario} className="form-control rounded" value={datosCompra.comentarios}></textarea>
                     </div>
                     <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
                         <div style={{ textAlign: 'center', marginTop: '0.2em' }} className="border border-success rounded">
@@ -639,7 +679,7 @@ const NuevaCompra = (params) => {
                             <h6 style={{ color: 'green', textAlign: 'center', marginBottom: '0.4em' }}>$ {glob.formatNumber(datosCompra.total_compra)}</h6>
                             <hr style={{ height: '2px', borderWidth: '0', color: 'gray', backgroundColor: 'gray' }}></hr>
                             <h6 style={{ marginTop: '0.4em' }}>Costo envio</h6>
-                            <input className="form-control" name='domicilio' type='number' onChange={cambioCostoEnvio} min="0" max="1000000" value={datosCompra.domicilio}></input>
+                            <input className="form-control rounded" name='domicilio' type='number' onChange={cambioCostoEnvio} min="0" max="1000000" value={datosCompra.domicilio}></input>
                             <h6 style={{ texAlign: 'center', marginTop: '0.4em' }}>Total con envio</h6>
                             <h6 style={{ color: 'green', textAlign: 'center', marginBottom: '0.4em' }}>$ {glob.formatNumber(parseInt(datosCompra.total_compra) + parseInt(datosCompra.domicilio))}</h6>
                             <hr style={{ height: '2px', borderWidth: '0', color: 'gray', backgroundColor: 'gray' }}></hr>
@@ -654,20 +694,20 @@ const NuevaCompra = (params) => {
                                 </select>
                             </div>
                             <h6 style={{ textAlign: 'center', display: 'none' }}>Costo medio de pago</h6>
-                            <input name='medio_de_pago' type='hidden' className="form-control" onChange={cambioCostoMedioPago} style={{ color: 'green', textAlign: 'center' }} value={datosCompra.costo_medio_pago}></input>
+                            <input name='medio_de_pago' type='hidden' className="form-control rounded" onChange={cambioCostoMedioPago} style={{ color: 'green', textAlign: 'center' }} value={datosCompra.costo_medio_pago}></input>
                             <hr style={{ height: '2px', borderWidth: '0', color: 'gray', backgroundColor: 'gray' }}></hr>
                             <h5 style={{ textAlign: 'center', marginTop: '0.4em' }}>Total a pagar</h5>
                             <h5 style={{ color: 'green', textAlign: 'center', marginBottom: '0.4em' }}>$ {glob.formatNumber(parseInt(datosCompra.total_compra) + parseInt(datosCompra.domicilio) + parseInt(datosCompra.costo_medio_pago))}</h5>
                         </div>
                         <div style={{ textAlign: 'center', marginTop: '1.5em' }} className="border border-danger rounded">
                             <h5 style={{ textAlign: 'center', marginTop: '0.4em' }}>Dinero recibido</h5>
-                            <input className="form-control" type='number' name='dinerorecibido' onChange={cambioRecibido} defaultValue={datosCompra.dinerorecibido}></input>
+                            <input className="form-control rounded" type='number' name='dinerorecibido' onChange={cambioRecibido} defaultValue={datosCompra.dinerorecibido}></input>
                             <h5 style={{ textAlign: 'center', marginTop: '0.4em' }}>Cambio</h5>
-                            <input className="form-control" type='number' name='cambio' style={{ color: 'red', marginBottom: '0.4em' }} value={datosCompra.cambio == '' ? '0' : glob.formatNumber(parseInt(datosCompra.cambio))}></input>
+                            <input className="form-control rounded" type='number' name='cambio' style={{ color: 'red', marginBottom: '0.4em' }} value={datosCompra.cambio == '' ? '0' : glob.formatNumber(parseInt(datosCompra.cambio))}></input>
                         </div>
                     </div>
                     <div style={{ margin: '1em' }} align='center' className='container'>
-                        <PrimaryButton id='btnIngresarCompra' className='btn btn-success' onClick={validarDatosVacio} disabled={datosCompra.id == '' ? false : true} type='button'>{datosCompra.id == '' ? 'Ingresar compra' : 'Editar compra'}</PrimaryButton>
+                        <PrimaryButton id='btnIngresarCompra' className='btn btn-success' onClick={validarDatosVacio} type='button'>{datosCompra.id == '' ? 'Ingresar venta' : 'Editar venta'}</PrimaryButton>
                         <button id='btnLoading' style={{ display: 'none', backgroundColor: 'gray' }} className="btn btn-primary" type="button" disabled>
                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Loading...

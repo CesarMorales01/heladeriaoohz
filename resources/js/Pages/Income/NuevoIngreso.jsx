@@ -105,17 +105,17 @@ const NuevoIngreso = (params) => {
                         <br />
                         <form method="POST" id="formCrear" action={route('income.store')} >
                             <input type="hidden" name='_token' value={params.token} />
-                            <input name="fecha" type="date" value={ingreso.fecha} className='form-control border' onChange={cambioFecha} id="inputDate" />
+                            <input name="fecha" type="date" value={ingreso.fecha} className='form-control rounded border' onChange={cambioFecha} id="inputDate" />
                             <label style={{ marginTop: '0.5em' }}>Selecciona categoria:</label>
                             <SelectCategoriasNew getCategoria={cambioCategoria} categorias={categorias} />
                             <label style={{ marginTop: '0.2em' }}>Categoria seleccionada:</label>
                             <input type="hidden" name='categoria' value={ingreso.categoria} />
-                            <input type={'text'} className='form-control border' disabled value={ingreso.nombreCategoria}></input>
+                            <input type={'text'} className='form-control rounded border' disabled value={ingreso.nombreCategoria}></input>
                             <label style={{ marginTop: '0.5em' }}>Valor:</label>
                             <br />
-                            <input name='valor' onChange={cambioValor} className='form-control border' type="number" placeholder='Valor' value={ingreso.valor} />
+                            <input name='valor' onChange={cambioValor} className='form-control rounded border' type="number" placeholder='Valor' value={ingreso.valor} />
                             <br />
-                            <textarea name='comentario' onChange={cambioComentario} className='form-control border' placeholder='Comentarios' value={ingreso.comentario}></textarea>
+                            <textarea name='comentario' onChange={cambioComentario} className='form-control rounded border' placeholder='Comentarios' value={ingreso.comentario}></textarea>
                         </form>
                         <div style={{ marginTop: '1em', marginBottom: '1em' }} className="col text-center">
                             <div className="modal-footer">

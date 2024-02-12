@@ -83,11 +83,10 @@ const ShowProducts = (params) => {
                                 if (item.imagen != '') {
                                     img = params.globalVars.urlImagenes + item.imagen
                                 }
-
                                 return (
                                     <div onClick={() => seleccionarProducto(img, item)} key={index} style={{ marginBottom: '1em' }} className="col-lg-4 col-md-4 col-sm-6 col-6"  >
                                         <div className="card border card-flyer pointer">
-                                            <img style={{ width: window.screen.width>600 ? '60%' : '100%', height: 'auto', marginTop: '1em', padding: '1em' }} src={img} className="card-img-top centerImg rounded" alt="" />
+                                            <img style={{ width: window.screen.width > 600 ? '60%' : '100%', height: 'auto', marginTop: '1em', padding: '1em' }} src={img} className="card-img-top centerImg rounded" alt="" />
                                             <div style={{ textAlign: 'center' }} className="card-body">
                                                 <h2 style={{ fontWeight: 'bold' }} className="card-title">{item.nombre}</h2>
                                             </div>

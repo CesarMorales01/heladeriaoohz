@@ -292,7 +292,7 @@ const Reports = (params) => {
                                         <th scope="col">$ {glob.formatNumber(totalIngresos)}</th>
                                     </tr>
                                     <tr className="table-danger">
-                                        <th scope="col">Total egresos</th>
+                                        <th scope="col">Total gastos</th>
                                         <th scope="col">$ {glob.formatNumber(totalGastos)}</th>
                                     </tr>
                                     <tr style={{ backgroundColor: getBackground() }} >

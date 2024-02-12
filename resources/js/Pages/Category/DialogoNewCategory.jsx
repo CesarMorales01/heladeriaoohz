@@ -73,13 +73,13 @@ const DialogoNewCategory = (params) => {
         form.submit()
     }
 
-    function enviarBorrar(){
+    function enviarBorrar() {
         document.getElementById('btnEliminar').click()
         loadingOn()
     }
 
 
-    function abrirDialogoEliminar(){
+    function abrirDialogoEliminar() {
         Swal.fire({
             title: '¿Eliminar esta categoria?',
             icon: 'warning',
@@ -87,11 +87,11 @@ const DialogoNewCategory = (params) => {
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Si, eliminar!'
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-              enviarBorrar()
+                enviarBorrar()
             }
-          })
+        })
     }
 
     return (
@@ -106,7 +106,7 @@ const DialogoNewCategory = (params) => {
                                 <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                             </svg>
                         </button>
-                        <a id='btnEliminar' style={{ display: 'none'}} href={route('category.destroy', categoria.id)}></a>
+                        <a id='btnEliminar' style={{ display: 'none' }} href={route('category.destroy', categoria.id)}></a>
                     </div>
                     <div className='container' style={{ margin: '0.2em' }}>
                         <form method="POST" id="formCrear" onSubmit={validarCampos} action={route('category.store')} encType="multipart/form-data">
@@ -114,12 +114,17 @@ const DialogoNewCategory = (params) => {
                             <input type="hidden" name='id' value={params.category.id == '' ? '' : params.category.id} />
                             <input type="hidden" name='idAnterior' value={params.category.id} />
                             <input type="hidden" name='nombreImagenAnterior' value={params.category.id == '' ? '' : params.category.imagen} />
-                            <input name='categoria' onChange={cambioNombre} className='form-control' type="text" placeholder='Nombre categoria' value={categoria.nombre} />
+                            <input name='categoria' onChange={cambioNombre} className='form-control rounded' type="text" placeholder='Nombre categoria' value={categoria.nombre} />
                             <div style={{ padding: '0.4em', marginTop: '0.8em' }} className='row border'>
                                 <div className='col-lg-12 col-md-12 col-sm-12 col-12'>
+                                    <label>
+                                        Seleccionar imagen:
+                                    </label>
+                                    <br />
                                     <input name='imagen' data-toggle="tooltip" title="" type="file" id="fileImg" onChange={mostrarImagen} />
+
                                 </div>
-                                <div style={{ marginTop:'0.2em' }} className='col-lg-12 col-md-12 col-sm-12 col-12'>
+                                <div style={{ marginTop: '0.2em' }} className='col-lg-12 col-md-12 col-sm-12 col-12'>
                                     <img id="ingresarImg" width="140px" height="150px" src={params.category.id == '' ? params.url + 'Images/Config/noPreview.jpg' : params.urlImagenes + params.category.imagen} />
                                 </div>
                                 <br />
