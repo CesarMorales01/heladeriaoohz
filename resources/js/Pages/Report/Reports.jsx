@@ -16,6 +16,7 @@ const Reports = (params) => {
     const glob = new GlobalFunctions()
     const [cargar, setCargar] = useState(false)
     const [totalIngresos, setTotalIngresos] = useState(params.totalIngresos)
+    const [totalProveedores, setTotalProveedores] = useState(params.totalProveedores)
     const [totalGastos, setTotalGastos] = useState(params.totalGastos)
     const [utilidad, setUtilidad] = useState(0)
     const [fechas, setFechas] = useState({
@@ -26,7 +27,7 @@ const Reports = (params) => {
     const [optionSelected, setOptionSelected] = useState('')
     const [topClientes, setTopClientes] = useState([])
     const [esteMes, setesteMes] = useState(false)
-
+   
     useEffect(() => {
         calcularUtilidad()
         if (params.estado != '') {
@@ -79,11 +80,12 @@ const Reports = (params) => {
                 setCargar(false)
                 setTotalIngresos(json.totalIngresos)
                 setTotalGastos(json.totalGastos)
+                setTotalProveedores(json.totalProveedores)
             })
     }
 
     function calcularUtilidad() {
-        let uti = parseInt(totalIngresos) - parseInt(totalGastos)
+        let uti = parseInt(totalIngresos) - parseInt(totalProveedores)- parseInt(totalGastos)
         setUtilidad(uti)
     }
 
@@ -290,6 +292,10 @@ const Reports = (params) => {
                                     <tr style={{ backgroundColor: '#95c799' }}>
                                         <th scope="col">Total ingresos</th>
                                         <th scope="col">$ {glob.formatNumber(totalIngresos)}</th>
+                                    </tr>
+                                    <tr className="table-danger">
+                                        <th scope="col">Total proveedores</th>
+                                        <th scope="col">$ {glob.formatNumber(totalProveedores)}</th>
                                     </tr>
                                     <tr className="table-danger">
                                         <th scope="col">Total gastos</th>

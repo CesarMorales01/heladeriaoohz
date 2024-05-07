@@ -37,8 +37,9 @@ class InformesController extends Controller
         $totalIngresos = intval($ingresos->original->ventas) + intval($ingresos->original->ingresos);
         $gastos = app(GastosController::class)->listByDate($finicial, $ffinal, '');
         $totalGastos = intval($gastos->original->gastos);
-        // return response()->json($totalIngresos, 200, []);
-        return Inertia::render('Report/Reports', compact('auth', 'globalVars', 'estado', 'totalIngresos', 'totalGastos'));
+        $proveedores=app(ProveedoresController::class)->listByDate($finicial, $ffinal, '');
+        $totalProveedores=intval($proveedores->original->totalProveedores);
+        return Inertia::render('Report/Reports', compact('auth', 'globalVars', 'estado', 'totalIngresos', 'totalGastos', 'totalProveedores'));
     }
 
     public function listByDate($finicial, $ffinal)
@@ -47,9 +48,12 @@ class InformesController extends Controller
         $totalIngresos = intval($ingresos->original->ventas) + intval($ingresos->original->ingresos);
         $gastos = app(GastosController::class)->listByDate($finicial, $ffinal, '');
         $totalGastos = intval($gastos->original->gastos);
+        $proveedores=app(ProveedoresController::class)->listByDate($finicial, $ffinal, '');
+        $totalProveedores=intval($proveedores->original->totalProveedores);
         $objeto = new stdClass();
         $objeto->totalGastos = $totalGastos;
         $objeto->totalIngresos = $totalIngresos;
+        $objeto->totalProveedores=$totalProveedores;
         return response()->json($objeto, 200, []);
     }
 

@@ -11,6 +11,7 @@ import Swal from 'sweetalert2'
 import TablaGastos from './TablaGastos';
 import CategoriasGastos from './CategoriasGastos';
 import NuevoGasto from './NuevoGasto';
+import GraficoGastos from './GraficoGastos';
 
 const Gastos = (params) => {
 
@@ -24,6 +25,8 @@ const Gastos = (params) => {
   })
   const [filtrarCategoria, setFiltrarCategoria] = useState('')
   const [noDatos, setNoDatos] = useState(false)
+  const [mostrarGrafico, setMostrarGrafico] = useState(false)
+  const [datosGrafico, setDatosGrafico] = useState([])
 
   useEffect(() => {
     if (cargar) {
@@ -37,6 +40,14 @@ const Gastos = (params) => {
     if (params.estado != '') {
       sweetAlert(params.estado)
     }
+    if (glob.getCookie('cookieGrafico') != null) {
+      if (glob.getCookie('cookieGrafico') == 'true') {
+        setMostrarGrafico(true)
+      } else {
+        setMostrarGrafico(false)
+      }
+    }
+    
   }, [])
 
   useEffect(() => {
@@ -45,7 +56,29 @@ const Gastos = (params) => {
     } else {
       setNoDatos(false)
     }
+    procesarDatosGrafico()
   }, [listaGastos])
+
+  function procesarDatosGrafico() {
+    const array = []
+    params.categorias.forEach(element => {
+      const item = {
+        'name': '',
+        'value': 0
+      }
+      listaGastos.forEach(element1 => {
+        if (element.nombre == element1.categoria) {
+          item.name = element1.categoria,
+            item.value = parseInt(item.value) + parseInt(element1.valor)
+        }
+      });
+      if (item.value > 0) {
+        array.push(item)
+      }
+    });
+    array.sort((a, b) => a.value - b.value);
+    setDatosGrafico(array)
+  }
 
   function cargarDatos() {
     const url = params.globalVars.myUrl + 'spend/list/bydate/' + fechas.fechaInicio + '/' + fechas.fechaFinal + '/' + filtrarCategoria
@@ -160,6 +193,16 @@ const Gastos = (params) => {
     }))
   }
 
+  function cambioMostrarGrafico() {
+    if (mostrarGrafico) {
+      glob.setCookie('cookieGrafico', false, 3600 * 60 * 24)
+      setMostrarGrafico(false)
+    } else {
+      setMostrarGrafico(true)
+      glob.setCookie('cookieGrafico', true, 3600 * 60 * 24)
+    }
+  }
+
   return (
     <AuthenticatedLayout
       user={params.auth} globalVars={params.globalVars}
@@ -236,9 +279,19 @@ const Gastos = (params) => {
           </table>
         </div>
       </div>
-      <h1 style={{ fontSize: '1.5em' }} id="titulo" className="text-center">Lista de gastos</h1>
-      <div className='container'>
+      <div style={{ textAlign: 'center' }} className='container'>
+        <span style={{ color: mostrarGrafico ? 'gray' : 'black', padding: '0.6em', fontSize: '1.3em' }}>Lista de gastos</span>
+        <label style={{ marginTop: '0.7em' }} className="relative inline-flex  cursor-pointer">
+          <input id='checkBoxMostrarGrafico' checked={mostrarGrafico} onChange={cambioMostrarGrafico} type="checkbox" className="sr-only peer" />
+          <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+        <span style={{ color: mostrarGrafico ? 'black' : 'gray', padding: '0.6em', fontSize: '1.3em' }}>Gráfico de gastos</span>
+      </div>
+      <div style={{ display: mostrarGrafico ? 'none' : '' }} className='container'>
         <TablaGastos noDatos={noDatos} datos={listaGastos}></TablaGastos>
+      </div>
+      <div style={{ display: mostrarGrafico ? '' : 'none' }} className='container'>
+        <GraficoGastos datosGrafico={datosGrafico} />
       </div>
       <button type="button" id='btnDialogoCategorias' style={{ display: 'none' }} data-toggle="modal" data-target="#dialogoCategorias"></button>
       <CategoriasGastos globalVars={params.globalVars} token={params.token} categorias={params.categorias} />

@@ -56,6 +56,30 @@ const ShowProducts = (params) => {
         })
     }
 
+    function cambiarFilterProductos(e) {
+        const check = e.target.value.toLowerCase()
+        let newArray = []
+        for (let i = 0; i < params.productos.length; i++) {
+            let producto = null
+            if (params.productos[i].nombre.toLowerCase().includes(check)) {
+                producto = params.productos[i]
+            } else {
+                if (params.productos[i].id.toString().includes(check)) {
+                    producto = params.productos[i]
+                }
+            }
+            if (producto != null) {
+                newArray.push(producto)
+            }
+        }
+        setFilterProductos(newArray)
+    }
+
+    function borrarInput() {
+        document.getElementById('inputBuscarProducto').value = ''
+        setFilterProductos(params.productos)
+    }
+
     return (
         <div className="row align-items-start">
             <input type='hidden' id='inputShowProductAddToCar' onClick={params.addToCar}></input>
@@ -76,6 +100,14 @@ const ShowProducts = (params) => {
             </div>
             <div style={{ marginTop: '0.2em' }} className="col-lg-10 col-md-10 col-sm-9 col-9" >
                 <div style={{ textAlign: 'center', marginBottom: '0em' }} className="container">
+                    <div style={{ marginLeft: window.screen.width > 600 ? '25%' : '5%' }} className="flex items-center py-3">
+                        <input id='inputBuscarProducto' onChange={cambiarFilterProductos} className='rounded' type='text' placeholder='Buscar producto...' style={{ width: window.screen.width > 600 ? '60%' : '100%' }}></input>
+                        <button onClick={borrarInput} className="flex-shrink-0 border-transparent border-4 text-teal-500 hover:text-teal-800 text-sm py-1 px-2 rounded" type="button">
+                            <svg style={{ padding: '0.2em', backgroundColor: 'gray', cursor: 'pointer' }} xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="rounded bi bi-x" viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </button>
+                    </div>
                     <div className="row justify-content-center" >
                         {
                             filterProductos.map((item, index) => {
@@ -84,7 +116,7 @@ const ShowProducts = (params) => {
                                     img = params.globalVars.urlImagenes + item.imagen
                                 }
                                 return (
-                                    <div onClick={() => seleccionarProducto(img, item)} key={index} style={{ marginBottom: '1em' }} className="col-lg-4 col-md-4 col-sm-6 col-6"  >
+                                    <div onClick={() => seleccionarProducto(img, item)} key={index} style={{ marginBottom: '1em' }} className="col-lg-3 col-md-3 col-sm-6 col-6"  >
                                         <div className="card border card-flyer pointer">
                                             <img style={{ width: window.screen.width > 600 ? '60%' : '100%', height: 'auto', marginTop: '1em', padding: '1em' }} src={img} className="card-img-top centerImg rounded" alt="" />
                                             <div style={{ textAlign: 'center' }} className="card-body">

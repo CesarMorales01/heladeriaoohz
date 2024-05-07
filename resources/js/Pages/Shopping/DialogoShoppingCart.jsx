@@ -128,8 +128,8 @@ const DialogoShoppingCart = (params) => {
                                 <th scope="col">Valor</th>
                                 <th scope="col">Cant</th>
                                 <th scope="col">Subtotal</th>
-                                <th scope="col">Sumar</th>
                                 <th scope="col">Restar</th>
+                                <th scope="col">Sumar</th>
                                 <th scope="col">Adicionar topping</th>
                                 <th scope="col">Borrar</th>
                             </tr>

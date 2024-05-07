@@ -26,7 +26,7 @@ class ShoppingController extends Controller
         $auth = Auth()->user();
         $globalVars = $this->global->getGlobalVars();
         $globalVars->info = DB::table('info_pagina')->first();
-        $compras = DB::table('lista_compras')->whereBetween('fecha', [$this->getFechaHoy(), $this->getFechaHoy()])->paginate(100);
+        $compras = DB::table('lista_compras')->whereBetween('fecha', [$this->getFechaHoy(), $this->getFechaHoy()])->orderBy('id', 'desc')->paginate(100);
         foreach ($compras as $compra) {
             $compra->cliente=$this->getClienteCompra($compra->cliente);
             $listaProductos = DB::table('lista_productos_comprados')->where('fk_compra', '=', $compra->id)->get();
